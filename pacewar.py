@@ -21,11 +21,13 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
-__version__ = "1.5.1"
+__version__ = "1.5.2a0"
 
+import os
 import math
 import time
 import random
+import json
 
 import sge
 
@@ -83,6 +85,8 @@ MENU_ITEMS = {MENU_MAIN: ["1-player", "2-player", "Controls", "Quit"],
               MENU_JS_PLAYER2: ["Thrust", "Left", "Right", "Shoot", "Back"],}
 MENU_BORDER = 32
 MENU_SPACING = 16
+
+CONFIG_DIR = os.path.join(os.path.expanduser("~"), ".pacewar")
 
 meter_left_sprite = None
 meter_right_sprite = None
@@ -1349,9 +1353,25 @@ def main():
     global music
     global menu_font
     global selection_font
+    global player1_key_thrust
+    global player1_key_left
+    global player1_key_right
+    global player1_key_shoot
+    global player2_key_thrust
+    global player2_key_left
+    global player2_key_right
+    global player2_key_shoot
+    global player1_js_thrust
+    global player1_js_left
+    global player1_js_right
+    global player1_js_shoot
+    global player2_js_thrust
+    global player2_js_left
+    global player2_js_right
+    global player2_js_shoot
 
     # Create Game object
-    Game(width=1280, height=720, scale=0.5, scale_smooth=True, fps=30,
+    Game(width=1280, height=720, scale=0.75, scale_smooth=True, fps=30,
          delta=True, delta_min=15, window_text="Pacewar",
          window_icon="Spaceship15B.png")
 
@@ -1444,7 +1464,66 @@ def main():
     Room(objects=objects, width=ROOM_WIDTH, height=ROOM_HEIGHT, views=views,
          background=background)
 
-    sge.game.start()
+    if not os.path.exists(CONFIG_DIR):
+        os.makedirs(CONFIG_DIR)
+
+    try:
+        with open(os.path.join(CONFIG_DIR, "keys.json"), 'r') as f:
+            keys_cfg = json.load(f)
+    except (IOError, ValueError):
+        pass
+    else:
+        player1_key_thrust = keys_cfg.get("player1_thrust", player1_key_thrust)
+        player1_key_left = keys_cfg.get("player1_left", player1_key_left)
+        player1_key_right = keys_cfg.get("player1_right", player1_key_right)
+        player1_key_shoot = keys_cfg.get("player1_shoot", player1_key_shoot)
+        player2_key_thrust = keys_cfg.get("player2_thrust", player2_key_thrust)
+        player2_key_left = keys_cfg.get("player2_left", player2_key_left)
+        player2_key_right = keys_cfg.get("player2_right", player2_key_right)
+        player2_key_shoot = keys_cfg.get("player2_shoot", player2_key_shoot)
+
+    try:
+        with open(os.path.join(CONFIG_DIR, "joystick.json"), 'r') as f:
+            js_cfg = json.load(f)
+    except (IOError, ValueError):
+        pass
+    else:
+        player1_js_thrust = tuple(js_cfg.get("player1_thrust",
+                                             player1_js_thrust))
+        player1_js_left = tuple(js_cfg.get("player1_left", player1_js_left))
+        player1_js_right = tuple(js_cfg.get("player1_right", player1_js_right))
+        player1_js_shoot = tuple(js_cfg.get("player1_shoot", player1_js_shoot))
+        player2_js_thrust = tuple(js_cfg.get("player2_thrust",
+                                             player2_js_thrust))
+        player2_js_left = tuple(js_cfg.get("player2_left", player2_js_left))
+        player2_js_right = tuple(js_cfg.get("player2_right", player2_js_right))
+        player2_js_shoot = tuple(js_cfg.get("player2_shoot", player2_js_shoot))
+
+    try:
+        sge.game.start()
+    finally:
+        keys_cfg = {"player1_thrust": player1_key_thrust,
+                    "player1_left": player1_key_left,
+                    "player1_right": player1_key_right,
+                    "player1_shoot": player1_key_shoot,
+                    "player2_thrust": player2_key_thrust,
+                    "player2_left": player2_key_left,
+                    "player2_right": player2_key_right,
+                    "player2_shoot": player2_key_shoot}
+        js_cfg = {"player1_thrust": player1_js_thrust,
+                  "player1_left": player1_js_left,
+                  "player1_right": player1_js_right,
+                  "player1_shoot": player1_js_shoot,
+                  "player2_thrust": player2_js_thrust,
+                  "player2_left": player2_js_left,
+                  "player2_right": player2_js_right,
+                  "player2_shoot": player2_js_shoot}
+
+        with open(os.path.join(CONFIG_DIR, "keys.json"), 'w') as f:
+            json.dump(keys_cfg, f)
+
+        with open(os.path.join(CONFIG_DIR, "joystick.json"), 'w') as f:
+            json.dump(js_cfg, f)
 
 
 if __name__ == '__main__':
