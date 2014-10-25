@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
-__version__ = "1.5.2a0"
+__version__ = "1.5.2a1"
 
 import os
 import math
@@ -35,6 +35,7 @@ VIEW_WIDTH = 1280
 VIEW_HEIGHT = 720
 ROOM_WIDTH = VIEW_WIDTH * 3
 ROOM_HEIGHT = VIEW_HEIGHT * 3
+SCALE = 0.75
 
 JOYSTICK_THRESHOLD = 0.7
 
@@ -148,7 +149,7 @@ class Game(sge.Game):
             sge.Sprite.from_screenshot().save(fname)
         elif key == "f11":
             if self.fullscreen:
-                self.scale = 0.5
+                self.scale = SCALE
                 self.fullscreen = False
                 self.scale = None
             else:
@@ -1371,7 +1372,7 @@ def main():
     global player2_js_shoot
 
     # Create Game object
-    Game(width=1280, height=720, scale=0.75, scale_smooth=True, fps=30,
+    Game(width=1280, height=720, scale=SCALE, scale_smooth=True, fps=30,
          delta=True, delta_min=15, window_text="Pacewar",
          window_icon="Spaceship15B.png")
 
