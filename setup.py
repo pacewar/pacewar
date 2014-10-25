@@ -39,7 +39,7 @@ executables = [
 ]
 
 setup(name = "Pacewar",
-      version = "1.5.1",
+      version = "1.5.2",
       description = "A fighting game with lots of ships",
       author = "Julian Marchant",
       author_email = "onpon4@riseup.net",
