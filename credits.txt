@@ -1,0 +1,33 @@
+PROGRAMMING
+
+onpon4 <https://onpon4.github.io>
+
+
+GRAPHICS
+
+Skorpio <http://opengameart.org/users/skorpio>
+Buch <http://opengameart.org/users/buch>
+gnsh <http://opengameart.org/users/gnsh>
+Rawdanitsu <http://opengameart.org/users/rawdanitsu>
+Osmic <http://opengameart.org/users/osmic>
+Jordan Trudgett <http://jordan.trudgett.com>
+
+
+SOUNDS
+
+onpon4 <https://onpon4.github.io>
+dklon <http://opengameart.org/users/dklon>
+NenadSimic <http://opengameart.org/users/nenadsimic>
+
+
+MUSIC
+
+Deceased Superior Technician (DST) <http://www.nosoapradio.us/>
+
+
+SPECIAL THANKS
+
+SGE Game Engine <http://stellarengine.nongnu.org>
+OpenGameArt.Org <http://opengameart.org>
+Sfxr <http://www.drpetter.se/project_sfxr.html>
+Pygame <http://pygame.org>

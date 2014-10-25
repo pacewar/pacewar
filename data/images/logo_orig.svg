@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1656.4871"
+   height="206.12979"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="logo_orig.svg"
+   inkscape:export-filename="/home/julian/projects/pacewar/data/images/logo.png"
+   inkscape:export-xdpi="34.935375"
+   inkscape:export-ydpi="34.935375">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3858"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#3636a9;stop-opacity:1;"
+         offset="0"
+         id="stop3860" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3838">
+      <stop
+         style="stop-color:#3636a9;stop-opacity:1;"
+         offset="0"
+         id="stop3840" />
+      <stop
+         id="stop3846"
+         offset="0.5"
+         style="stop-color:#3636a9;stop-opacity:0.49803922;" />
+      <stop
+         style="stop-color:#3636a9;stop-opacity:0;"
+         offset="1"
+         id="stop3842" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3858"
+       id="linearGradient3862"
+       x1="-943.6511"
+       y1="112.44267"
+       x2="755.53347"
+       y2="112.44267"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="880.6363"
+     inkscape:cy="-319.64944"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="709"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     showborder="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(919.92202,-12.297237)">
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot2985"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Ricasso;-inkscape-font-specification:Ricasso"><flowRegion
+         id="flowRegion2987"><rect
+           id="rect2989"
+           width="677.14288"
+           height="448.57144"
+           x="34.285713"
+           y="206.6479"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Ricasso;-inkscape-font-specification:Ricasso" /></flowRegion><flowPara
+         id="flowPara2991"></flowPara></flowRoot>    <text
+       xml:space="preserve"
+       style="font-size:252.28927612000001091px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#3636a9;fill-opacity:1;stroke:#000000;stroke-width:12;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Ricasso;-inkscape-font-specification:Ricasso"
+       x="-969.18726"
+       y="207.05115"
+       id="text2993"
+       sodipodi:linespacing="125%"
+       transform="scale(0.97469306,1.025964)"
+       inkscape:export-filename="/home/julian/projects/pacewar/data/images/logo.png"
+       inkscape:export-xdpi="34.929447"
+       inkscape:export-ydpi="34.929447"><tspan
+         sodipodi:role="line"
+         id="tspan2995"
+         x="-969.18726"
+         y="207.05115"
+         style="stroke:#000000;stroke-width:12;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill:#3636a9;fill-opacity:1">Pacewar</tspan></text>
+  </g>
+</svg>
