@@ -43,16 +43,10 @@ TEAM_SIZE = 8
 
 TEAM_RED = 0
 TEAM_GREEN = 1
-SHIPS = {TEAM_RED: ["Spaceship14", "Spaceship15", "Spaceship16"],
-         TEAM_GREEN: ["Spaceship14B", "Spaceship15B", "Spaceship16B"]}
-EXHAUST = {"Spaceship14": "Exhaust14", "Spaceship14B": "Exhaust14",
-           "Spaceship15": "Exhaust15", "Spaceship15B": "Exhaust15",
-           "Spaceship16": "Exhaust16", "Spaceship16B": "Exhaust16"}
 START_X_RANGE = {TEAM_RED: [0, VIEW_WIDTH],
                  TEAM_GREEN: [ROOM_WIDTH - VIEW_WIDTH, ROOM_WIDTH]}
 START_Y_RANGE = {TEAM_RED: [0, VIEW_HEIGHT],
                  TEAM_GREEN: [ROOM_HEIGHT - VIEW_HEIGHT, ROOM_HEIGHT]}
-BULLETS = {TEAM_RED: "bullet_red", TEAM_GREEN: "bullet_green"}
 
 THRUST = 1.5
 THRUST_MAX = 8
@@ -89,24 +83,8 @@ MENU_SPACING = 16
 
 CONFIG_DIR = os.path.join(os.path.expanduser("~"), ".pacewar")
 
-meter_left_sprite = None
-meter_right_sprite = None
-meter_center_sprite = None
-meter_back_sprite = None
-meter_sprite = None
-shoot_sound = None
-explode_sound = None
-dissipate_sound = None
-select_sound = None
-music = None
-menu_font = None
-selection_font = None
-
 colorblind = False
 points_to_win = 3
-
-player1 = None
-player2 = None
 score = 0
 
 player1_key_thrust = "up"
@@ -181,7 +159,7 @@ class Room(sge.Room):
 
     def event_step(self, time_passed, delta_mult):
         if not self.started:
-            sge.game.project_sprite("logo", 0, sge.game.width / 2, 96)
+            sge.game.project_sprite(logo_sprite, 0, sge.game.width / 2, 96)
 
             if self.menu == MENU_KEYS_PLAYER1:
                 menu_items = ["Thrust:  {}".format(player1_key_thrust),
@@ -242,11 +220,9 @@ class Room(sge.Room):
             menu_h = (line_h * len(menu_items) + MENU_BORDER * 2 +
                       MENU_SPACING * (len(menu_items) - 1))
 
-            if self.menu_sprite is None:
-                self.menu_sprite = sge.Sprite(width=menu_w, height=menu_h)
-            elif (self.menu_sprite.width != menu_w or
-                  self.menu_sprite.height != menu_h):
-                self.menu_sprite.destroy()
+            if (self.menu_sprite is None or
+                    (self.menu_sprite.width != menu_w or
+                     self.menu_sprite.height != menu_h)):
                 self.menu_sprite = sge.Sprite(width=menu_w, height=menu_h)
 
             self.menu_sprite.draw_lock()
@@ -694,7 +670,7 @@ class Ship(sge.Object):
     def __init__(self, team):
         super(Ship, self).__init__(random.randrange(*START_X_RANGE[team]),
                                    random.randrange(*START_Y_RANGE[team]),
-                                   sprite=random.choice(SHIPS[team]),
+                                   sprite=random.choice(ship_sprites[team]),
                                    checks_collisions=False,
                                    regulate_origin=True,
                                    collision_precise=True, image_xscale=0.2,
@@ -766,8 +742,7 @@ class Ship(sge.Object):
 
         # Colorblind mode
         if colorblind:
-            sprite = ("colorblind_green" if self.team == TEAM_GREEN else
-                      "colorblind_red")
+            sprite = colorblind_sprites[self.team]
             sge.game.current_room.project_sprite(sprite, 0, self.x - 8,
                                                  self.y - 8, self.z + 1)
 
@@ -775,9 +750,9 @@ class Ship(sge.Object):
         if self.thrust:
             if self.thrust_obj is None:
                 self.thrust_obj = sge.Object.create(
-                    self.x, self.y, -1, sprite=EXHAUST[self.sprite.id],
-                    tangible=False, regulate_origin=True,
-                    image_xscale=self.image_xscale,
+                    self.x, self.y, -1,
+                    sprite=exhaust_sprites[id(self.sprite)], tangible=False,
+                    regulate_origin=True, image_xscale=self.image_xscale,
                     image_yscale=self.image_yscale,
                     image_rotation=self.image_rotation)
             else:
@@ -796,7 +771,7 @@ class Ship(sge.Object):
     def event_collision(self, other):
         if isinstance(other, Bullet) and other.team != self.team:
             self.destroy()
-            Explosion.create(self.x, self.y, self.z, sprite="explosion",
+            Explosion.create(self.x, self.y, self.z, sprite=explosion_sprite,
                              regulate_origin=True, image_xscale=0.5,
                              image_yscale=0.5)
 
@@ -826,7 +801,7 @@ class Ship(sge.Object):
     def do_shoot(self):
         if self.can_shoot:
             bullet = Bullet.create(self.team, self.x, self.y, -5,
-                                   sprite=BULLETS[self.team],
+                                   sprite=bullet_sprites[self.team],
                                    collision_precise=True,
                                    image_rotation=self.image_rotation)
             bullet.speed = BULLET_SPEED
@@ -905,7 +880,7 @@ class Human(Controller):
     def __init__(self, parent, view, key_thrust="up", key_left="left",
                  key_right="right", key_shoot="space", js_thrust=None,
                  js_left=None, js_right=None, js_shoot=None):
-        sge.Object.__init__(self, parent.x, parent.y, sprite="target",
+        sge.Object.__init__(self, parent.x, parent.y, sprite=target_sprite,
                             tangible=False)
         self.parent = parent
         self.team = parent.team
@@ -1280,8 +1255,7 @@ def create_nebula(num, z, scroll_rate):
                         height=max(ROOM_HEIGHT, ROOM_HEIGHT * scroll_rate))
     layers = []
     for i in range(num):
-        nebula_sprite = sge.game.sprites[random.choice(["Nebula1", "Nebula2",
-                                                        "Nebula3"])]
+        nebula_sprite = random.choice(nebula_sprites)
         x = random.randrange(max(1, int(sprite.width - nebula_sprite.width)))
         y = random.randrange(max(1, int(sprite.height - nebula_sprite.height)))
         sprite.draw_sprite(nebula_sprite, 0, x, y)
@@ -1298,7 +1272,6 @@ def update_meter():
                meter_center_sprite.width +
                meter_back_sprite.width * points_to_win * 2)
     if meter_sprite.width != meter_w:
-        meter_sprite.destroy()
         meter_sprite = sge.Sprite(width=meter_w, height=16)
 
     w = meter_back_sprite.width
@@ -1317,16 +1290,17 @@ def update_meter():
     if score > 0:
         for i in range(score):
             x = w * i
-            green_meter.draw_sprite("meter_green", 0, x, 0)
+            green_meter.draw_sprite(meter_sprites[TEAM_GREEN], 0, x, 0)
             if colorblind:
-                green_meter.draw_sprite("colorblind_green", 0, x + w / 2 - 8,
-                                        0)
+                green_meter.draw_sprite(colorblind_sprites[TEAM_GREEN], 0,
+                                        x + w / 2 - 8, 0)
     elif score < 0:
         for i in range(abs(score)):
             x = red_meter.width - w * i
-            red_meter.draw_sprite("meter_red", 0, x, 0)
+            red_meter.draw_sprite(meter_sprites[TEAM_RED], 0, x, 0)
             if colorblind:
-                red_meter.draw_sprite("colorblind_red", 0, x - w / 2 - 8, 0)
+                red_meter.draw_sprite(colorblind_sprites[TEAM_RED], 0,
+                                      x - w / 2 - 8, 0)
 
     green_meter.draw_unlock()
     red_meter.draw_unlock()
@@ -1341,165 +1315,144 @@ def update_meter():
     meter_sprite.draw_unlock()
 
 
-def main():
-    global meter_left_sprite
-    global meter_right_sprite
-    global meter_center_sprite
-    global meter_back_sprite
-    global meter_sprite
-    global shoot_sound
-    global explode_sound
-    global dissipate_sound
-    global select_sound
-    global music
-    global menu_font
-    global selection_font
-    global player1_key_thrust
-    global player1_key_left
-    global player1_key_right
-    global player1_key_shoot
-    global player2_key_thrust
-    global player2_key_left
-    global player2_key_right
-    global player2_key_shoot
-    global player1_js_thrust
-    global player1_js_left
-    global player1_js_right
-    global player1_js_shoot
-    global player2_js_thrust
-    global player2_js_left
-    global player2_js_right
-    global player2_js_shoot
+# Create Game object
+Game(width=1280, height=720, scale=SCALE, scale_smooth=True, fps=30,
+     delta=True, delta_min=15, window_text="Pacewar",
+     window_icon="Spaceship15B.png")
 
-    # Create Game object
-    Game(width=1280, height=720, scale=SCALE, scale_smooth=True, fps=30,
-         delta=True, delta_min=15, window_text="Pacewar",
-         window_icon="Spaceship15B.png")
+# Register classes
+sge.game.register_class(Ship)
+sge.game.register_class(Bullet)
 
-    # Register classes
-    sge.game.register_class(Ship)
-    sge.game.register_class(Bullet)
+# Load sprites
+r1_sprite = sge.Sprite("Spaceship14", origin_x=83, origin_y=154, bbox_x=-17,
+                       bbox_y=-17, bbox_width=33, bbox_height=33)
+g1_sprite = sge.Sprite("Spaceship14B", origin_x=83, origin_y=154, bbox_x=-17,
+                       bbox_y=-17, bbox_width=33, bbox_height=33)
+r2_sprite = sge.Sprite("Spaceship15", origin_x=80, origin_y=91, bbox_x=-16,
+                       bbox_y=-16, bbox_width=32, bbox_height=32)
+g2_sprite = sge.Sprite("Spaceship15B", origin_x=80, origin_y=91, bbox_x=-16,
+                       bbox_y=-16, bbox_width=32, bbox_height=32)
+r3_sprite = sge.Sprite("Spaceship16", origin_x=69, origin_y=92, bbox_x=-14,
+                       bbox_y=-14, bbox_width=28, bbox_height=28)
+g3_sprite = sge.Sprite("Spaceship16B", origin_x=69, origin_y=92, bbox_x=-14,
+                       bbox_y=-14, bbox_width=28, bbox_height=28)
+e1_sprite = sge.Sprite("Exhaust14", origin_x=31, origin_y=-65, fps=60)
+e2_sprite = sge.Sprite("Exhaust15", origin_x=35, origin_y=-44, fps=60)
+e3_sprite = sge.Sprite("Exhaust16", origin_x=14, origin_y=-48, fps=60)
 
-    # Load sprites
-    sge.Sprite("Spaceship14", origin_x=83, origin_y=154, bbox_x=-17,
-               bbox_y=-17, bbox_width=33, bbox_height=33)
-    sge.Sprite("Spaceship14B", origin_x=83, origin_y=154, bbox_x=-17,
-               bbox_y=-17, bbox_width=33, bbox_height=33)
-    sge.Sprite("Spaceship15", origin_x=80, origin_y=91, bbox_x=-16,
-               bbox_y=-16, bbox_width=32, bbox_height=32)
-    sge.Sprite("Spaceship15B", origin_x=80, origin_y=91, bbox_x=-16,
-               bbox_y=-16, bbox_width=32, bbox_height=32)
-    sge.Sprite("Spaceship16", origin_x=69, origin_y=92, bbox_x=-14, bbox_y=-14,
-               bbox_width=28, bbox_height=28)
-    sge.Sprite("Spaceship16B", origin_x=69, origin_y=92, bbox_x=-14,
-               bbox_y=-14, bbox_width=28, bbox_height=28)
-    sge.Sprite("explosion", origin_x=64, origin_y=64, fps=30)
-    sge.Sprite("Exhaust14", origin_x=31, origin_y=-65, fps=60)
-    sge.Sprite("Exhaust15", origin_x=35, origin_y=-44, fps=60)
-    sge.Sprite("Exhaust16", origin_x=14, origin_y=-48, fps=60)
-    sge.Sprite("bullet_red", origin_x=8, origin_y=16)
-    sge.Sprite("bullet_green", origin_x=8, origin_y=16)
-    sge.Sprite("Stars")
-    sge.Sprite("Nebula1")
-    sge.Sprite("Nebula2")
-    sge.Sprite("Nebula3")
-    sge.Sprite("target", width=80, height=80, origin_x=40, origin_y=40)
-    sge.Sprite("logo", origin_x=321)
-    sge.Sprite("colorblind_green")
-    sge.Sprite("colorblind_red")
-    sge.Sprite("font")
-    sge.Sprite("font_selected")
+ship_sprites = {TEAM_RED: [r1_sprite, r2_sprite, r3_sprite],
+                TEAM_GREEN: [g1_sprite, g2_sprite, g3_sprite]}
+exhaust_sprites = {id(r1_sprite): e1_sprite, id(g1_sprite): e1_sprite,
+                   id(r2_sprite): e2_sprite, id(g2_sprite): e2_sprite,
+                   id(r3_sprite): e3_sprite, id(g3_sprite): e3_sprite}
 
-    meter_left_sprite = sge.Sprite("meter_left")
-    meter_right_sprite = sge.Sprite("meter_right")
-    meter_center_sprite = sge.Sprite("meter_center")
-    meter_back_sprite = sge.Sprite("meter_back")
-    sge.Sprite("meter_green")
-    sge.Sprite("meter_red", origin_x=37)
-    meter_w = (meter_left_sprite.width + meter_right_sprite.width +
-               meter_center_sprite.width +
-               meter_back_sprite.width * points_to_win * 2)
-    meter_sprite = sge.Sprite(width=meter_w, height=16)
-    update_meter()
+explosion_sprite = sge.Sprite("explosion", origin_x=64, origin_y=64, fps=30)
+bullet_sprites = {TEAM_RED: sge.Sprite("bullet_red", origin_x=8, origin_y=16),
+                  TEAM_GREEN: sge.Sprite("bullet_green", origin_x=8,
+                                         origin_y=16)}
+stars_sprite = sge.Sprite("Stars")
+nebula_sprites = [sge.Sprite("Nebula1"), sge.Sprite("Nebula2"),
+                  sge.Sprite("Nebula3")]
+target_sprite = sge.Sprite("target", width=80, height=80, origin_x=40,
+                           origin_y=40)
+logo_sprite = sge.Sprite("logo", origin_x=321)
+colorblind_sprites = {TEAM_RED: sge.Sprite("colorblind_red"),
+                      TEAM_GREEN: sge.Sprite("colorblind_green")}
+font_sprite = sge.Sprite("font")
+font_selected_sprite = sge.Sprite("font_selected")
+meter_left_sprite = sge.Sprite("meter_left")
+meter_right_sprite = sge.Sprite("meter_right")
+meter_center_sprite = sge.Sprite("meter_center")
+meter_back_sprite = sge.Sprite("meter_back")
+meter_sprites = {TEAM_RED: sge.Sprite("meter_red", origin_x=37),
+                 TEAM_GREEN: sge.Sprite("meter_green")}
+meter_w = (meter_left_sprite.width + meter_right_sprite.width +
+           meter_center_sprite.width +
+           meter_back_sprite.width * points_to_win * 2)
+meter_sprite = sge.Sprite(width=meter_w, height=16)
+update_meter()
 
-    # Load backgrounds
-    layers = []
-    layers.append(sge.BackgroundLayer("Stars", 0, 0, -1000, xscroll_rate=0.05,
-                                      yscroll_rate=0.01))
-    layers.append(create_nebula(15, -100, 0.1))
-    layers.append(create_nebula(30, -50, 0.5))
-    layers.append(create_nebula(5, 5, 1))
+# Load backgrounds
+layers = []
+layers.append(sge.BackgroundLayer(stars_sprite, 0, 0, -1000, xscroll_rate=0.05,
+                                  yscroll_rate=0.01))
+layers.append(create_nebula(15, -100, 0.1))
+layers.append(create_nebula(30, -50, 0.5))
+layers.append(create_nebula(5, 5, 1))
 
-    background = sge.Background(layers, sge.Color("black"))
+background = sge.Background(layers, sge.Color("black"))
 
-    # Load sounds
-    shoot_sound = sge.Sound("shoot.wav")
-    explode_sound = sge.Sound("explode.wav")
-    dissipate_sound = sge.Sound("dissipate.ogg")
-    select_sound = sge.Sound("select.ogg", volume=50)
+# Load sounds
+shoot_sound = sge.Sound("shoot.wav")
+explode_sound = sge.Sound("explode.wav")
+dissipate_sound = sge.Sound("dissipate.ogg")
+select_sound = sge.Sound("select.ogg", volume=50)
 
-    # Load music
-    music = sge.Music("DST-RailJet-LongSeamlessLoop.ogg")
+# Load music
+music = sge.Music("DST-RailJet-LongSeamlessLoop.ogg")
 
-    # Load fonts
-    chars = [' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',',
-             '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-             ':', ';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F',
-             'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
-             'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', '`',
-             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-             '{', '|', '}', '~']
-    menu_font = sge.Font.from_sprite("font", chars, size=24)
-    selection_font = sge.Font.from_sprite("font_selected", chars, size=24)
+# Load fonts
+chars = [' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',',
+         '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+         ':', ';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F',
+         'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+         'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', '`',
+         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+         'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+         '{', '|', '}', '~']
+menu_font = sge.Font.from_sprite(font_sprite, chars, size=24)
+selection_font = sge.Font.from_sprite(font_selected_sprite, chars, size=24)
 
-    # Create objects
-    objects = []
+# Create objects
+objects = []
 
-    # Create views
-    views = [sge.View(ROOM_WIDTH // 2 - VIEW_WIDTH // 2,
-                      ROOM_HEIGHT // 2 - VIEW_HEIGHT // 2, width=VIEW_WIDTH,
-                      height=VIEW_HEIGHT)]
+# Create views
+views = [sge.View(ROOM_WIDTH // 2 - VIEW_WIDTH // 2,
+                  ROOM_HEIGHT // 2 - VIEW_HEIGHT // 2, width=VIEW_WIDTH,
+                  height=VIEW_HEIGHT)]
 
-    # Create room
-    Room(objects=objects, width=ROOM_WIDTH, height=ROOM_HEIGHT, views=views,
-         background=background)
+# Create room
+Room(objects=objects, width=ROOM_WIDTH, height=ROOM_HEIGHT, views=views,
+     background=background)
 
-    if not os.path.exists(CONFIG_DIR):
-        os.makedirs(CONFIG_DIR)
+if not os.path.exists(CONFIG_DIR):
+    os.makedirs(CONFIG_DIR)
 
-    try:
-        with open(os.path.join(CONFIG_DIR, "keys.json"), 'r') as f:
-            keys_cfg = json.load(f)
-    except (IOError, ValueError):
-        pass
-    else:
-        player1_key_thrust = keys_cfg.get("player1_thrust", player1_key_thrust)
-        player1_key_left = keys_cfg.get("player1_left", player1_key_left)
-        player1_key_right = keys_cfg.get("player1_right", player1_key_right)
-        player1_key_shoot = keys_cfg.get("player1_shoot", player1_key_shoot)
-        player2_key_thrust = keys_cfg.get("player2_thrust", player2_key_thrust)
-        player2_key_left = keys_cfg.get("player2_left", player2_key_left)
-        player2_key_right = keys_cfg.get("player2_right", player2_key_right)
-        player2_key_shoot = keys_cfg.get("player2_shoot", player2_key_shoot)
+try:
+    with open(os.path.join(CONFIG_DIR, "keys.json"), 'r') as f:
+        keys_cfg = json.load(f)
+except (IOError, ValueError):
+    pass
+else:
+    player1_key_thrust = keys_cfg.get("player1_thrust", player1_key_thrust)
+    player1_key_left = keys_cfg.get("player1_left", player1_key_left)
+    player1_key_right = keys_cfg.get("player1_right", player1_key_right)
+    player1_key_shoot = keys_cfg.get("player1_shoot", player1_key_shoot)
+    player2_key_thrust = keys_cfg.get("player2_thrust", player2_key_thrust)
+    player2_key_left = keys_cfg.get("player2_left", player2_key_left)
+    player2_key_right = keys_cfg.get("player2_right", player2_key_right)
+    player2_key_shoot = keys_cfg.get("player2_shoot", player2_key_shoot)
 
-    try:
-        with open(os.path.join(CONFIG_DIR, "joystick.json"), 'r') as f:
-            js_cfg = json.load(f)
-    except (IOError, ValueError):
-        pass
-    else:
-        player1_js_thrust = tuple(js_cfg.get("player1_thrust",
-                                             player1_js_thrust))
-        player1_js_left = tuple(js_cfg.get("player1_left", player1_js_left))
-        player1_js_right = tuple(js_cfg.get("player1_right", player1_js_right))
-        player1_js_shoot = tuple(js_cfg.get("player1_shoot", player1_js_shoot))
-        player2_js_thrust = tuple(js_cfg.get("player2_thrust",
-                                             player2_js_thrust))
-        player2_js_left = tuple(js_cfg.get("player2_left", player2_js_left))
-        player2_js_right = tuple(js_cfg.get("player2_right", player2_js_right))
-        player2_js_shoot = tuple(js_cfg.get("player2_shoot", player2_js_shoot))
+try:
+    with open(os.path.join(CONFIG_DIR, "joystick.json"), 'r') as f:
+        js_cfg = json.load(f)
+except (IOError, ValueError):
+    pass
+else:
+    player1_js_thrust = tuple(js_cfg.get("player1_thrust",
+                                         player1_js_thrust))
+    player1_js_left = tuple(js_cfg.get("player1_left", player1_js_left))
+    player1_js_right = tuple(js_cfg.get("player1_right", player1_js_right))
+    player1_js_shoot = tuple(js_cfg.get("player1_shoot", player1_js_shoot))
+    player2_js_thrust = tuple(js_cfg.get("player2_thrust",
+                                         player2_js_thrust))
+    player2_js_left = tuple(js_cfg.get("player2_left", player2_js_left))
+    player2_js_right = tuple(js_cfg.get("player2_right", player2_js_right))
+    player2_js_shoot = tuple(js_cfg.get("player2_shoot", player2_js_shoot))
 
+
+if __name__ == '__main__':
     try:
         sge.game.start()
     finally:
@@ -1525,7 +1478,3 @@ def main():
 
         with open(os.path.join(CONFIG_DIR, "joystick.json"), 'w') as f:
             json.dump(js_cfg, f)
-
-
-if __name__ == '__main__':
-    main()
