@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
-__version__ = "1.5.2"
+__version__ = "1.5.3a0"
 
 import os
 import math
@@ -929,7 +929,8 @@ class Human(Controller):
         self.parent.shoot = self.parent.shoot or js_states[3]
 
     def event_step(self, time_passed, delta_mult):
-        if self.parent is not None and self.parent.alive:
+        if (self.parent is not None and
+                self.parent in sge.game.current_room.objects):
             self.x = self.parent.x
             self.y = self.parent.y
             view = sge.game.current_room.views[self.view]
@@ -940,7 +941,8 @@ class Human(Controller):
             self.destroy()
 
     def event_key_press(self, key, char):
-        if self.parent is not None and self.parent.alive:
+        if (self.parent is not None and
+                self.parent in sge.game.current_room.objects):
             if key == self.key_thrust:
                 self.parent.thrust = True
             if key == self.key_left:
@@ -952,7 +954,8 @@ class Human(Controller):
                 self.parent.do_shoot()
 
     def event_key_release(self, key):
-        if self.parent is not None and self.parent.alive:
+        if (self.parent is not None and
+                self.parent in sge.game.current_room.objects):
             if key == self.key_thrust:
                 self.parent.thrust = False
             if key == self.key_left:
@@ -963,7 +966,8 @@ class Human(Controller):
                 self.parent.shoot = False
 
     def event_joystick_axis_move(self, js_name, js_id, axis, value):
-        if self.parent is not None and self.parent.alive:
+        if (self.parent is not None and
+                self.parent in sge.game.current_room.objects):
             js_versions = [(js_id, "axis+", axis), (js_id, "axis-", axis)]
             if value > JOYSTICK_THRESHOLD:
                 js = (js_id, "axis+", axis)
@@ -991,7 +995,8 @@ class Human(Controller):
                 self.parent.shoot = False
 
     def event_joystick_hat_move(self, js_name, js_id, hat, x, y):
-        if self.parent is not None and self.parent.alive:
+        if (self.parent is not None and
+                self.parent in sge.game.current_room.objects):
             js_versions = [(js_id, "hatx+", hat), (js_id, "hatx-", hat)]
             if x > 0:
                 js = (js_id, "hatx+", hat)
@@ -1045,7 +1050,8 @@ class Human(Controller):
                 self.parent.shoot = False
 
     def event_joystick_button_press(self, js_name, js_id, button):
-        if self.parent is not None and self.parent.alive:
+        if (self.parent is not None and
+                self.parent in sge.game.current_room.objects):
             js = (js_id, "button", button)
 
             if js == self.js_thrust:
@@ -1059,7 +1065,8 @@ class Human(Controller):
                 self.parent.do_shoot()
 
     def event_joystick_button_release(self, js_name, js_id, button):
-        if self.parent is not None and self.parent.alive:
+        if (self.parent is not None and
+                self.parent in sge.game.current_room.objects):
             js = (js_id, "button", button)
 
             if js == self.js_thrust:
@@ -1128,7 +1135,7 @@ class AI(Controller):
         self.set_alarm("check_threats", 5)
 
     def event_step(self, time_passed, delta_mult):
-        if self.parent.alive:
+        if self.parent in sge.game.current_room.objects:
             # Release all buttons
             self.parent.thrust = False
             self.parent.left = False
@@ -1193,7 +1200,7 @@ class AI(Controller):
                     # Resort to just shooting.
                     self.parent.do_shoot()
             elif self.target is not None:
-                if self.target.alive:
+                if self.target in sge.game.current_room.objects:
                     # Persue target
                     dist = math.hypot(self.target.x - self.parent.x,
                                       self.target.y - self.parent.y)
@@ -1216,7 +1223,7 @@ class AI(Controller):
                     self.set_alarm("select_target", 10)
 
     def event_alarm(self, alarm_id):
-        if self.parent.alive:
+        if self.parent in sge.game.current_room.objects:
             if alarm_id == "select_target":
                 self.target = None
 
