@@ -87,6 +87,9 @@ colorblind = False
 points_to_win = 3
 score = 0
 
+ships_lists = {TEAM_RED: [], TEAM_GREEN: []}
+bullets_lists = {TEAM_RED: [], TEAM_GREEN: []}
+
 player1_key_thrust = "up"
 player1_key_left = "left"
 player1_key_right = "right"
@@ -155,7 +158,7 @@ class Room(sge.Room):
         self.menu_sprite = None
         self.menu_axes = {}
         self.round_end()
-        self.set_alarm("check_win", 5)
+        self.alarms["check_win"] = 5
 
     def event_step(self, time_passed, delta_mult):
         if not self.started:
@@ -247,16 +250,11 @@ class Room(sge.Room):
         global score
 
         if alarm_id == "check_win":
-            red_alive = False
-            green_alive = False
-            for ship in self.objects_by_class[Ship]:
-                if ship.team == TEAM_RED:
-                    red_alive = True
-                elif ship.team == TEAM_GREEN:
-                    green_alive = True
+            red_alive = bool(ships_lists[TEAM_RED])
+            green_alive = bool(ships_lists[TEAM_GREEN])
 
             if red_alive and green_alive:
-                self.set_alarm("check_win", 5)
+                self.alarms["check_win"] = 5
             elif green_alive and not red_alive:
                 score += 1
                 update_meter()
@@ -476,9 +474,9 @@ class Room(sge.Room):
         player1 = None
         player2 = None
 
-        for ship in self.objects_by_class[Ship]:
+        for ship in ships_lists[TEAM_RED] + ships_lists[TEAM_GREEN]:
             ship.destroy()
-        for bullet in self.objects_by_class[Bullet]:
+        for bullet in bullets_lists[TEAM_RED] + bullets_lists[TEAM_GREEN]:
             bullet.destroy()
 
         if not music.playing:
@@ -496,72 +494,57 @@ class Room(sge.Room):
                                    xport=(VIEW_WIDTH / 2),
                                    width=(VIEW_WIDTH / 2), height=VIEW_HEIGHT)]
 
-            p1ship = None
-            while p1ship is None:
-                p1ship = random.choice(self.objects_by_class[Ship])
-                if p1ship.team != TEAM_GREEN:
-                    p1ship = None
-            else:
-                player1 = Human.create(p1ship, 1,
-                                       key_thrust=player1_key_thrust,
-                                       key_left=player1_key_left,
-                                       key_right=player1_key_right,
-                                       key_shoot=player1_key_shoot,
-                                       js_thrust=player1_js_thrust,
-                                       js_left=player1_js_left,
-                                       js_right=player1_js_right,
-                                       js_shoot=player1_js_shoot)
-                p1ship.controller.destroy()
-                p1ship.controller = player1
+            p1ship = random.choice(ships_lists[TEAM_GREEN])
+            player1 = Human.create(p1ship, 1,
+                                   key_thrust=player1_key_thrust,
+                                   key_left=player1_key_left,
+                                   key_right=player1_key_right,
+                                   key_shoot=player1_key_shoot,
+                                   js_thrust=player1_js_thrust,
+                                   js_left=player1_js_left,
+                                   js_right=player1_js_right,
+                                   js_shoot=player1_js_shoot)
+            p1ship.controller.destroy()
+            p1ship.controller = player1
 
-            p2ship = None
-            while p2ship is None:
-                p2ship = random.choice(self.objects_by_class[Ship])
-                if p2ship.team != TEAM_RED:
-                    p2ship = None
-            else:
-                player2 = Human.create(p2ship, 0,
-                                       key_thrust=player2_key_thrust,
-                                       key_left=player2_key_left,
-                                       key_right=player2_key_right,
-                                       key_shoot=player2_key_shoot,
-                                       js_thrust=player2_js_thrust,
-                                       js_left=player2_js_left,
-                                       js_right=player2_js_right,
-                                       js_shoot=player2_js_shoot)
-                p2ship.controller.destroy()
-                p2ship.controller = player2
+            p2ship = random.choice(ships_lists[TEAM_RED])
+            player2 = Human.create(p2ship, 0,
+                                   key_thrust=player2_key_thrust,
+                                   key_left=player2_key_left,
+                                   key_right=player2_key_right,
+                                   key_shoot=player2_key_shoot,
+                                   js_thrust=player2_js_thrust,
+                                   js_left=player2_js_left,
+                                   js_right=player2_js_right,
+                                   js_shoot=player2_js_shoot)
+            p2ship.controller.destroy()
+            p2ship.controller = player2
         else:
             self.views = [sge.View(ROOM_WIDTH, ROOM_HEIGHT,
                                    width=VIEW_WIDTH, height=VIEW_HEIGHT)]
 
-            p1ship = None
-            while p1ship is None:
-                p1ship = random.choice(self.objects_by_class[Ship])
-                if p1ship.team != TEAM_GREEN:
-                    p1ship = None
-            else:
-                player1 = Human.create(p1ship, 0,
-                                       key_thrust=player1_key_thrust,
-                                       key_left=player1_key_left,
-                                       key_right=player1_key_right,
-                                       key_shoot=player1_key_shoot,
-                                       js_thrust=player1_js_thrust,
-                                       js_left=player1_js_left,
-                                       js_right=player1_js_right,
-                                       js_shoot=player1_js_shoot)
-                p1ship.controller.destroy()
-                p1ship.controller = player1
+            p1ship = random.choice(ships_lists[TEAM_GREEN])
+            player1 = Human.create(p1ship, 0,
+                                   key_thrust=player1_key_thrust,
+                                   key_left=player1_key_left,
+                                   key_right=player1_key_right,
+                                   key_shoot=player1_key_shoot,
+                                   js_thrust=player1_js_thrust,
+                                   js_left=player1_js_left,
+                                   js_right=player1_js_right,
+                                   js_shoot=player1_js_shoot)
+            p1ship.controller.destroy()
+            p1ship.controller = player1
 
         self.started = True
-        self.set_alarm("check_win", 5)
+        self.alarms["check_win"] = 5
 
     def round_end(self):
         global score
 
         if self.started:
             if abs(score) < points_to_win:
-                self.set_alarm("round_end", 90)
+                self.alarms["round_end"] = 90
             else:
                 self.finished = True
                 sge.Music.stop(fade_time=5000)
@@ -577,7 +560,7 @@ class Room(sge.Room):
                     Ship.create(TEAM_RED)
                     Ship.create(TEAM_GREEN)
 
-            self.set_alarm("check_win", 5)
+            self.alarms["check_win"] = 5
 
     def wait_key(self):
         # Wait for a key press and return it.
@@ -679,6 +662,7 @@ class Ship(sge.Object):
         self.team = team
 
     def event_create(self):
+        global ships_lists
         self.controller = AI.create(self)
         self.thrust = False
         self.left = False
@@ -688,6 +672,7 @@ class Ship(sge.Object):
         self.rvelocity = 0
         self.thrust_obj = None
         self.delta_mult = 0
+        ships_lists[self.team].append(self)
 
     def event_update_position(self, delta_mult):
         self.delta_mult += delta_mult
@@ -790,6 +775,10 @@ class Ship(sge.Object):
                 explode_sound.play(volume=50)
 
     def event_destroy(self):
+        global ships_lists
+        while self in ships_lists[self.team]:
+            ships_lists[self.team].remove(self)
+
         if self.controller is not None:
             self.controller.destroy()
             self.controller = None
@@ -809,7 +798,7 @@ class Ship(sge.Object):
             bullet.xvelocity += self.xvelocity
             bullet.yvelocity += self.yvelocity
             self.can_shoot = False
-            self.set_alarm("shoot", SHOOT_WAIT)
+            self.alarms["shoot"] = SHOOT_WAIT
 
             in_range = False
             for view in sge.game.current_room.views:
@@ -839,7 +828,14 @@ class Bullet(sge.Object):
         self.team = team
 
     def event_create(self):
-        self.set_alarm("death", BULLET_LIFE)
+        global bullets_lists
+        bullets_lists[self.team].append(self)
+        self.alarms["death"] = BULLET_LIFE
+
+    def event_destroy(self):
+        global bullets_list
+        while self in bullets_lists[self.team]:
+            bullets_lists[self.team].remove(self)
 
     def event_alarm(self, alarm_id):
         if alarm_id == "death":
@@ -1084,12 +1080,7 @@ class Human(Controller):
 
         super(Human, self).event_destroy()
 
-        friends = []
-        for ship in sge.game.current_room.objects_by_class[Ship]:
-            if (not isinstance(ship.controller, Human) and
-                    ship.team == self.team):
-                friends.append(ship)
-
+        friends = ships_lists[self.team]
         if friends:
             ship = random.choice(friends)
 
@@ -1131,8 +1122,8 @@ class AI(Controller):
     def event_create(self):
         self.target = None
         self.threats = []
-        self.set_alarm("select_target", random.randint(30, 90))
-        self.set_alarm("check_threats", 5)
+        self.alarms["select_target"] = random.randint(30, 90)
+        self.alarms["check_threats"] = 5
 
     def event_step(self, time_passed, delta_mult):
         if self.parent in sge.game.current_room.objects:
@@ -1219,41 +1210,38 @@ class AI(Controller):
                             self.parent.thrust = True
                         else:
                             self.parent.do_shoot()
-                elif self.get_alarm("select_target") > 10:
-                    self.set_alarm("select_target", 10)
+                elif self.alarms.get("select_target", 15) > 10:
+                    self.alarms["select_target"] = 10
 
     def event_alarm(self, alarm_id):
         if self.parent in sge.game.current_room.objects:
+            et = TEAM_GREEN if self.team == TEAM_RED else TEAM_RED
             if alarm_id == "select_target":
                 self.target = None
 
-                for ship in sge.game.current_room.objects_by_class[Ship]:
-                    if (ship.team != self.parent.team and
-                            (self.target is None or
+                for ship in ships_lists[et]:
+                    if (self.target is None or
                              (math.hypot(ship.x - self.parent.x,
                                          ship.y - self.parent.y) <
                               math.hypot(self.target.x - self.parent.x,
-                                         self.target.y - self.parent.y)))):
+                                         self.target.y - self.parent.y))):
                         self.target = ship
 
-                self.set_alarm("select_target", random.randint(90, 180))
+                self.alarms["select_target"] = random.randint(90, 180)
             elif alarm_id == "check_threats":
                 self.threats = []
-                potential_threats = (
-                    sge.game.current_room.objects_by_class[Ship] +
-                    sge.game.current_room.objects_by_class[Bullet])
+                potential_threats = ships_lists[et] + bullets_lists[et]
                 for pt in potential_threats:
-                    if pt.team != self.parent.team:
-                        dist = math.hypot(pt.x - self.parent.x,
-                                          pt.y - self.parent.y)
-                        direction = (pt.image_rotation + 90) % 360
-                        pt_direction = math.degrees(math.atan2(
-                            pt.y - self.parent.y, self.parent.x - pt.x)) % 360
-                        diff = abs(pt_direction - direction)
-                        if (dist <= DANGER_DISTANCE and
-                                diff <= DANGER_ANGLE):
-                            self.threats.append(pt)
-                self.set_alarm("check_threats", random.randint(5, 10))
+                    dist = math.hypot(pt.x - self.parent.x,
+                                      pt.y - self.parent.y)
+                    direction = (pt.image_rotation + 90) % 360
+                    pt_direction = math.degrees(math.atan2(
+                        pt.y - self.parent.y, self.parent.x - pt.x)) % 360
+                    diff = abs(pt_direction - direction)
+                    if (dist <= DANGER_DISTANCE and
+                            diff <= DANGER_ANGLE):
+                        self.threats.append(pt)
+                self.alarms["check_threats"] = random.randint(5, 10)
 
 
 def create_nebula(num, z, scroll_rate):
@@ -1326,10 +1314,6 @@ def update_meter():
 Game(width=1280, height=720, scale=SCALE, scale_smooth=True, fps=30,
      delta=True, delta_min=15, window_text="Pacewar",
      window_icon="Spaceship15B.png")
-
-# Register classes
-sge.game.register_class(Ship)
-sge.game.register_class(Bullet)
 
 # Load sprites
 r1_sprite = sge.Sprite("Spaceship14", origin_x=83, origin_y=154, bbox_x=-17,
@@ -1420,8 +1404,9 @@ views = [sge.View(ROOM_WIDTH // 2 - VIEW_WIDTH // 2,
                   height=VIEW_HEIGHT)]
 
 # Create room
-Room(objects=objects, width=ROOM_WIDTH, height=ROOM_HEIGHT, views=views,
-     background=background)
+sge.game.start_room = Room(objects=objects, width=ROOM_WIDTH,
+                           height=ROOM_HEIGHT, views=views,
+                           background=background)
 
 if not os.path.exists(CONFIG_DIR):
     os.makedirs(CONFIG_DIR)
