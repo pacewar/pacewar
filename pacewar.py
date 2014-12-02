@@ -553,10 +553,10 @@ class Room(sge.Room):
                 loser = TEAM_RED if score > 0 else TEAM_GREEN
                 score = 0
                 update_meter()
-                for i in range(TEAM_SIZE):
+                for i in range(TEAM_SIZE // 2):
                     Ship.create(loser)
             else:
-                for i in range(TEAM_SIZE):
+                for i in range(TEAM_SIZE // 2):
                     Ship.create(TEAM_RED)
                     Ship.create(TEAM_GREEN)
 
