@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
-__version__ = "1.5.3"
+__version__ = "1.5.4a0"
 
 import os
 import math
@@ -30,6 +30,11 @@ import random
 import json
 
 import sge
+
+DATA = os.path.join(os.path.dirname(__file__), "data")
+DATA_IMAGES = os.path.join(DATA, "images")
+DATA_MUSIC = os.path.join(DATA, "music")
+DATA_SOUNDS = os.path.join(DATA, "sounds")
 
 VIEW_WIDTH = 1280
 VIEW_HEIGHT = 720
@@ -1313,24 +1318,27 @@ def update_meter():
 # Create Game object
 Game(width=1280, height=720, scale=SCALE, scale_smooth=True, fps=30,
      delta=True, delta_min=15, window_text="Pacewar",
-     window_icon="Spaceship15B.png")
+     window_icon=os.path.join(DATA_IMAGES, "Spaceship15B.png"))
 
 # Load sprites
-r1_sprite = sge.Sprite("Spaceship14", origin_x=83, origin_y=154, bbox_x=-17,
-                       bbox_y=-17, bbox_width=33, bbox_height=33)
-g1_sprite = sge.Sprite("Spaceship14B", origin_x=83, origin_y=154, bbox_x=-17,
-                       bbox_y=-17, bbox_width=33, bbox_height=33)
-r2_sprite = sge.Sprite("Spaceship15", origin_x=80, origin_y=91, bbox_x=-16,
-                       bbox_y=-16, bbox_width=32, bbox_height=32)
-g2_sprite = sge.Sprite("Spaceship15B", origin_x=80, origin_y=91, bbox_x=-16,
-                       bbox_y=-16, bbox_width=32, bbox_height=32)
-r3_sprite = sge.Sprite("Spaceship16", origin_x=69, origin_y=92, bbox_x=-14,
-                       bbox_y=-14, bbox_width=28, bbox_height=28)
-g3_sprite = sge.Sprite("Spaceship16B", origin_x=69, origin_y=92, bbox_x=-14,
-                       bbox_y=-14, bbox_width=28, bbox_height=28)
-e1_sprite = sge.Sprite("Exhaust14", origin_x=31, origin_y=-65, fps=60)
-e2_sprite = sge.Sprite("Exhaust15", origin_x=35, origin_y=-44, fps=60)
-e3_sprite = sge.Sprite("Exhaust16", origin_x=14, origin_y=-48, fps=60)
+r1_sprite = sge.Sprite("Spaceship14", DATA_IMAGES, origin_x=83, origin_y=154,
+                       bbox_x=-17, bbox_y=-17, bbox_width=33, bbox_height=33)
+g1_sprite = sge.Sprite("Spaceship14B", DATA_IMAGES, origin_x=83, origin_y=154,
+                       bbox_x=-17, bbox_y=-17, bbox_width=33, bbox_height=33)
+r2_sprite = sge.Sprite("Spaceship15", DATA_IMAGES, origin_x=80, origin_y=91,
+                       bbox_x=-16, bbox_y=-16, bbox_width=32, bbox_height=32)
+g2_sprite = sge.Sprite("Spaceship15B", DATA_IMAGES, origin_x=80, origin_y=91,
+                       bbox_x=-16, bbox_y=-16, bbox_width=32, bbox_height=32)
+r3_sprite = sge.Sprite("Spaceship16", DATA_IMAGES, origin_x=69, origin_y=92,
+                       bbox_x=-14, bbox_y=-14, bbox_width=28, bbox_height=28)
+g3_sprite = sge.Sprite("Spaceship16B", DATA_IMAGES, origin_x=69, origin_y=92,
+                       bbox_x=-14, bbox_y=-14, bbox_width=28, bbox_height=28)
+e1_sprite = sge.Sprite("Exhaust14", DATA_IMAGES, origin_x=31, origin_y=-65,
+                       fps=60)
+e2_sprite = sge.Sprite("Exhaust15", DATA_IMAGES, origin_x=35, origin_y=-44,
+                       fps=60)
+e3_sprite = sge.Sprite("Exhaust16", DATA_IMAGES, origin_x=14, origin_y=-48,
+                       fps=60)
 
 ship_sprites = {TEAM_RED: [r1_sprite, r2_sprite, r3_sprite],
                 TEAM_GREEN: [g1_sprite, g2_sprite, g3_sprite]}
@@ -1338,26 +1346,29 @@ exhaust_sprites = {id(r1_sprite): e1_sprite, id(g1_sprite): e1_sprite,
                    id(r2_sprite): e2_sprite, id(g2_sprite): e2_sprite,
                    id(r3_sprite): e3_sprite, id(g3_sprite): e3_sprite}
 
-explosion_sprite = sge.Sprite("explosion", origin_x=64, origin_y=64, fps=30)
-bullet_sprites = {TEAM_RED: sge.Sprite("bullet_red", origin_x=8, origin_y=16),
-                  TEAM_GREEN: sge.Sprite("bullet_green", origin_x=8,
-                                         origin_y=16)}
-stars_sprite = sge.Sprite("Stars")
-nebula_sprites = [sge.Sprite("Nebula1"), sge.Sprite("Nebula2"),
-                  sge.Sprite("Nebula3")]
-target_sprite = sge.Sprite("target", width=80, height=80, origin_x=40,
-                           origin_y=40)
-logo_sprite = sge.Sprite("logo", origin_x=321)
-colorblind_sprites = {TEAM_RED: sge.Sprite("colorblind_red"),
-                      TEAM_GREEN: sge.Sprite("colorblind_green")}
-font_sprite = sge.Sprite("font")
-font_selected_sprite = sge.Sprite("font_selected")
-meter_left_sprite = sge.Sprite("meter_left")
-meter_right_sprite = sge.Sprite("meter_right")
-meter_center_sprite = sge.Sprite("meter_center")
-meter_back_sprite = sge.Sprite("meter_back")
-meter_sprites = {TEAM_RED: sge.Sprite("meter_red", origin_x=37),
-                 TEAM_GREEN: sge.Sprite("meter_green")}
+explosion_sprite = sge.Sprite("explosion", DATA_IMAGES, origin_x=64,
+                              origin_y=64, fps=30)
+bullet_sprites = {TEAM_RED: sge.Sprite("bullet_red", DATA_IMAGES, origin_x=8,
+                                       origin_y=16),
+                  TEAM_GREEN: sge.Sprite("bullet_green", DATA_IMAGES,
+                                         origin_x=8, origin_y=16)}
+stars_sprite = sge.Sprite("Stars", DATA_IMAGES)
+nebula_sprites = [sge.Sprite("Nebula1", DATA_IMAGES),
+                  sge.Sprite("Nebula2", DATA_IMAGES),
+                  sge.Sprite("Nebula3", DATA_IMAGES)]
+target_sprite = sge.Sprite("target", DATA_IMAGES, width=80, height=80,
+                           origin_x=40, origin_y=40)
+logo_sprite = sge.Sprite("logo", DATA_IMAGES, origin_x=321)
+colorblind_sprites = {TEAM_RED: sge.Sprite("colorblind_red", DATA_IMAGES),
+                      TEAM_GREEN: sge.Sprite("colorblind_green", DATA_IMAGES)}
+font_sprite = sge.Sprite("font", DATA_IMAGES)
+font_selected_sprite = sge.Sprite("font_selected", DATA_IMAGES)
+meter_left_sprite = sge.Sprite("meter_left", DATA_IMAGES)
+meter_right_sprite = sge.Sprite("meter_right", DATA_IMAGES)
+meter_center_sprite = sge.Sprite("meter_center", DATA_IMAGES)
+meter_back_sprite = sge.Sprite("meter_back", DATA_IMAGES)
+meter_sprites = {TEAM_RED: sge.Sprite("meter_red", DATA_IMAGES, origin_x=37),
+                 TEAM_GREEN: sge.Sprite("meter_green", DATA_IMAGES)}
 meter_w = (meter_left_sprite.width + meter_right_sprite.width +
            meter_center_sprite.width +
            meter_back_sprite.width * points_to_win * 2)
@@ -1375,13 +1386,13 @@ layers.append(create_nebula(5, 5, 1))
 background = sge.Background(layers, sge.Color("black"))
 
 # Load sounds
-shoot_sound = sge.Sound("shoot.wav")
-explode_sound = sge.Sound("explode.wav")
-dissipate_sound = sge.Sound("dissipate.ogg")
-select_sound = sge.Sound("select.ogg", volume=50)
+shoot_sound = sge.Sound(os.path.join(DATA_SOUNDS, "shoot.wav"))
+explode_sound = sge.Sound(os.path.join(DATA_SOUNDS, "explode.wav"))
+dissipate_sound = sge.Sound(os.path.join(DATA_SOUNDS, "dissipate.ogg"))
+select_sound = sge.Sound(os.path.join(DATA_SOUNDS, "select.ogg"), volume=50)
 
 # Load music
-music = sge.Music("DST-RailJet-LongSeamlessLoop.ogg")
+music = sge.Music(os.path.join(DATA_MUSIC, "DST-RailJet-LongSeamlessLoop.ogg"))
 
 # Load fonts
 chars = [' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',',
