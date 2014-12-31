@@ -435,7 +435,7 @@ class Room(sge.Room):
         else:
             if key == "escape":
                 sge.Music.stop(fade_time=500)
-                self.start()
+                self.start("dissolve", 500)
             elif key == "enter":
                 sge.Music.pause()
                 select_sound.play()
