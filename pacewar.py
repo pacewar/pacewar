@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
-__version__ = "1.5.4"
+__version__ = "1.5.5a0"
 
 import os
 import math
@@ -592,8 +592,7 @@ class Room(sge.Room):
                                   sge.game.height / 2, width=sge.game.width,
                                   height=sge.game.height,
                                   color=sge.Color("white"),
-                                  halign=sge.ALIGN_CENTER,
-                                  valign=sge.ALIGN_MIDDLE)
+                                  halign="center", valign="middle")
 
             # Refresh
             sge.game.refresh()
@@ -646,8 +645,7 @@ class Room(sge.Room):
                                   sge.game.height / 2, width=sge.game.width,
                                   height=sge.game.height,
                                   color=sge.Color("white"),
-                                  halign=sge.ALIGN_CENTER,
-                                  valign=sge.ALIGN_MIDDLE)
+                                  halign="center", valign="middle")
 
             # Refresh
             sge.game.refresh()
