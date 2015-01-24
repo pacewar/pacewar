@@ -1259,8 +1259,7 @@ def create_nebula(num, z, scroll_rate):
         sprite.draw_sprite(nebula_sprite, 0, x, y)
 
     return sge.BackgroundLayer(sprite, 0, 0, z, xscroll_rate=scroll_rate,
-                               yscroll_rate=scroll_rate, xrepeat=False,
-                               yrepeat=False)
+                               yscroll_rate=scroll_rate)
 
 
 def update_meter():
@@ -1376,7 +1375,9 @@ update_meter()
 # Load backgrounds
 layers = []
 layers.append(sge.BackgroundLayer(stars_sprite, 0, 0, -1000, xscroll_rate=0.05,
-                                  yscroll_rate=0.01))
+                                  yscroll_rate=0.01, repeat_left=True,
+                                  repeat_right=True, repeat_up=True,
+                                  repeat_down=True))
 layers.append(create_nebula(15, -100, 0.1))
 layers.append(create_nebula(30, -50, 0.5))
 layers.append(create_nebula(5, 5, 1))
