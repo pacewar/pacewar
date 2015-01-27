@@ -90,7 +90,6 @@ CONFIG_DIR = os.path.join(os.path.expanduser("~"), ".pacewar")
 
 colorblind = False
 points_to_win = 3
-score = 0
 
 ships_lists = {TEAM_RED: [], TEAM_GREEN: []}
 bullets_lists = {TEAM_RED: [], TEAM_GREEN: []}
@@ -115,10 +114,6 @@ player2_js_shoot = (1, "button", 1)
 
 class Game(sge.Game):
 
-    def event_game_start(self):
-        self.scale = None
-        self.mouse.visible = False
-
     def event_step(self, time_passed, delta_mult):
         x = self.width / 2 - meter_sprite.width / 2
         y = 64
@@ -129,7 +124,7 @@ class Game(sge.Game):
 
         if key == "f7":
             colorblind = not colorblind
-            update_meter()
+            self.current_room.update_meter()
         elif key == "f8":
             fname = "screenshot-{}.bmp".format(round(time.time(), 3))
             sge.Sprite.from_screenshot().save(fname)
@@ -155,6 +150,7 @@ class Game(sge.Game):
 class Room(sge.Room):
 
     def event_room_start(self):
+        self.score = 0
         self.started = False
         self.finished = False
         self.multiplayer = False
@@ -164,6 +160,7 @@ class Room(sge.Room):
         self.menu_axes = {}
         self.round_end()
         self.alarms["check_win"] = 5
+        self.update_meter()
 
     def event_step(self, time_passed, delta_mult):
         if not self.started:
@@ -249,11 +246,9 @@ class Room(sge.Room):
                                     sge.game.width / 2 - menu_w / 2, 240)
         elif self.finished:
             if not music.playing:
-                sge.game.start()
+                create_room().start()
 
     def event_alarm(self, alarm_id):
-        global score
-
         if alarm_id == "check_win":
             red_alive = bool(ships_lists[TEAM_RED])
             green_alive = bool(ships_lists[TEAM_GREEN])
@@ -261,12 +256,12 @@ class Room(sge.Room):
             if red_alive and green_alive:
                 self.alarms["check_win"] = 5
             elif green_alive and not red_alive:
-                score += 1
-                update_meter()
+                self.score += 1
+                self.update_meter()
                 self.round_end()
             elif red_alive and not green_alive:
-                score -= 1
-                update_meter()
+                self.score -= 1
+                self.update_meter()
                 self.round_end()
             else:
                 self.round_end()
@@ -294,7 +289,7 @@ class Room(sge.Room):
 
         if self.finished:
             if key == "enter":
-                sge.game.start()
+                create_room().start()
         elif not self.started:
             if key == "up":
                 self.menu_selection -= 1
@@ -321,7 +316,7 @@ class Room(sge.Room):
                 elif self.menu == MENU_START:
                     if self.menu_selection < 6:
                         points_to_win = self.menu_selection + 1
-                        update_meter()
+                        self.update_meter()
                         self.round_start()
                     else:
                         self.menu = MENU_MAIN
@@ -435,7 +430,7 @@ class Room(sge.Room):
         else:
             if key == "escape":
                 sge.Music.stop(fade_time=500)
-                self.start("dissolve", 500)
+                create_room().start("dissolve", 500)
             elif key == "enter":
                 sge.Music.pause()
                 select_sound.play()
@@ -471,7 +466,57 @@ class Room(sge.Room):
             select_sound.play()
             sge.game.unpause()
         elif key == "escape":
-            sge.game.start()
+            sge.Music.stop()
+            create_room().start()
+
+    def update_meter(self):
+        global meter_sprite
+
+        meter_w = (meter_left_sprite.width + meter_right_sprite.width +
+                   meter_center_sprite.width +
+                   meter_back_sprite.width * points_to_win * 2)
+        if meter_sprite.width != meter_w:
+            meter_sprite = sge.Sprite(width=meter_w, height=16)
+
+        w = meter_back_sprite.width
+        h = meter_back_sprite.height
+
+        green_meter = sge.Sprite(width=(w * points_to_win), height=h)
+        red_meter = sge.Sprite(width=green_meter.width, height=h)
+
+        green_meter.draw_lock()
+        red_meter.draw_lock()
+
+        for i in range(points_to_win):
+            green_meter.draw_sprite(meter_back_sprite, 0, w * i, 0)
+            red_meter.draw_sprite(meter_back_sprite, 0, w * i, 0)
+
+        if self.score > 0:
+            for i in range(self.score):
+                x = w * i
+                green_meter.draw_sprite(meter_sprites[TEAM_GREEN], 0, x, 0)
+                if colorblind:
+                    green_meter.draw_sprite(colorblind_sprites[TEAM_GREEN], 0,
+                                            x + w / 2 - 8, 0)
+        elif self.score < 0:
+            for i in range(abs(self.score)):
+                x = red_meter.width - w * i
+                red_meter.draw_sprite(meter_sprites[TEAM_RED], 0, x, 0)
+                if colorblind:
+                    red_meter.draw_sprite(colorblind_sprites[TEAM_RED], 0,
+                                          x - w / 2 - 8, 0)
+
+        green_meter.draw_unlock()
+        red_meter.draw_unlock()
+
+        x = 0
+        meter_sprite.draw_lock()
+        meter_sprite.draw_clear()
+        for sprite in [meter_left_sprite, red_meter, meter_center_sprite,
+                       green_meter, meter_right_sprite]:
+            meter_sprite.draw_sprite(sprite, 0, x, 0)
+            x += sprite.width
+        meter_sprite.draw_unlock()
 
     def round_start(self):
         global player1
@@ -487,9 +532,9 @@ class Room(sge.Room):
         if not music.playing:
             music.play(loops=None)
 
-        for i in range(max(1, TEAM_SIZE - max(score, 0))):
+        for i in range(max(1, TEAM_SIZE - max(self.score, 0))):
             Ship.create(TEAM_GREEN)
-        for i in range(max(1, TEAM_SIZE + min(score, 0))):
+        for i in range(max(1, TEAM_SIZE + min(self.score, 0))):
             Ship.create(TEAM_RED)
 
         if self.multiplayer:
@@ -545,19 +590,17 @@ class Room(sge.Room):
         self.alarms["check_win"] = 5
 
     def round_end(self):
-        global score
-
         if self.started:
-            if abs(score) < points_to_win:
+            if abs(self.score) < points_to_win:
                 self.alarms["round_end"] = 90
             else:
                 self.finished = True
                 sge.Music.stop(fade_time=5000)
         else:
-            if score:
-                loser = TEAM_RED if score > 0 else TEAM_GREEN
-                score = 0
-                update_meter()
+            if self.score:
+                loser = TEAM_RED if self.score > 0 else TEAM_GREEN
+                self.score = 0
+                self.update_meter()
                 for i in range(TEAM_SIZE // 2):
                     Ship.create(loser)
             else:
@@ -1262,54 +1305,12 @@ def create_nebula(num, z, scroll_rate):
                                yscroll_rate=scroll_rate)
 
 
-def update_meter():
-    global meter_sprite
-
-    meter_w = (meter_left_sprite.width + meter_right_sprite.width +
-               meter_center_sprite.width +
-               meter_back_sprite.width * points_to_win * 2)
-    if meter_sprite.width != meter_w:
-        meter_sprite = sge.Sprite(width=meter_w, height=16)
-
-    w = meter_back_sprite.width
-    h = meter_back_sprite.height
-
-    green_meter = sge.Sprite(width=(w * points_to_win), height=h)
-    red_meter = sge.Sprite(width=green_meter.width, height=h)
-
-    green_meter.draw_lock()
-    red_meter.draw_lock()
-
-    for i in range(points_to_win):
-        green_meter.draw_sprite(meter_back_sprite, 0, w * i, 0)
-        red_meter.draw_sprite(meter_back_sprite, 0, w * i, 0)
-
-    if score > 0:
-        for i in range(score):
-            x = w * i
-            green_meter.draw_sprite(meter_sprites[TEAM_GREEN], 0, x, 0)
-            if colorblind:
-                green_meter.draw_sprite(colorblind_sprites[TEAM_GREEN], 0,
-                                        x + w / 2 - 8, 0)
-    elif score < 0:
-        for i in range(abs(score)):
-            x = red_meter.width - w * i
-            red_meter.draw_sprite(meter_sprites[TEAM_RED], 0, x, 0)
-            if colorblind:
-                red_meter.draw_sprite(colorblind_sprites[TEAM_RED], 0,
-                                      x - w / 2 - 8, 0)
-
-    green_meter.draw_unlock()
-    red_meter.draw_unlock()
-
-    x = 0
-    meter_sprite.draw_lock()
-    meter_sprite.draw_clear()
-    for sprite in [meter_left_sprite, red_meter, meter_center_sprite,
-                   green_meter, meter_right_sprite]:
-        meter_sprite.draw_sprite(sprite, 0, x, 0)
-        x += sprite.width
-    meter_sprite.draw_unlock()
+def create_room():
+    views = [sge.View(ROOM_WIDTH // 2 - VIEW_WIDTH // 2,
+                      ROOM_HEIGHT // 2 - VIEW_HEIGHT // 2, width=VIEW_WIDTH,
+                      height=VIEW_HEIGHT)]
+    return Room(width=ROOM_WIDTH, height=ROOM_HEIGHT, views=views,
+                background=background)
 
 
 # Create Game object
@@ -1370,7 +1371,6 @@ meter_w = (meter_left_sprite.width + meter_right_sprite.width +
            meter_center_sprite.width +
            meter_back_sprite.width * points_to_win * 2)
 meter_sprite = sge.Sprite(width=meter_w, height=16)
-update_meter()
 
 # Load backgrounds
 layers = []
@@ -1405,18 +1405,11 @@ chars = [' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',',
 menu_font = sge.Font.from_sprite(font_sprite, chars, size=24)
 selection_font = sge.Font.from_sprite(font_selected_sprite, chars, size=24)
 
-# Create objects
-objects = []
-
-# Create views
-views = [sge.View(ROOM_WIDTH // 2 - VIEW_WIDTH // 2,
-                  ROOM_HEIGHT // 2 - VIEW_HEIGHT // 2, width=VIEW_WIDTH,
-                  height=VIEW_HEIGHT)]
-
 # Create room
-sge.game.start_room = Room(objects=objects, width=ROOM_WIDTH,
-                           height=ROOM_HEIGHT, views=views,
-                           background=background)
+sge.game.start_room = create_room()
+
+sge.game.scale = None
+sge.game.mouse.visible = False
 
 if not os.path.exists(CONFIG_DIR):
     os.makedirs(CONFIG_DIR)
