@@ -1,3 +1,13 @@
+Copyright (C) 2014, 2015 Julian Marchant <onpon4@riseup.net>
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.
+
+========================================================================
+
+
 PACEWAR
 
 This was my entry for PyWeek 19. The theme of this PyWeek competition
@@ -47,8 +57,8 @@ Other controls:
 - Middle mouse button: Quit the game.
 
 The middle mouse button quitting the game is meant to work around a bug
-in Pygame 1.9.2a0 which sometimes locks up the keyboard when toggling
-fullscreen or changing the window size. See this post on the SGE blog
-for more information:
+in Pygame which sometimes locks up the keyboard when toggling fullscreen
+or changing the window size. See this post on the SGE blog for more
+information:
 
 https://savannah.nongnu.org/forum/forum.php?forum_id=8113
