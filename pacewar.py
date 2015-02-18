@@ -717,45 +717,41 @@ class Ship(sge.Object):
         self.can_shoot = True
         self.rvelocity = 0
         self.thrust_obj = None
-        self.delta_mult = 0
         ships_lists[self.team].append(self)
 
     def event_update_position(self, delta_mult):
-        self.delta_mult += delta_mult
-
-        for i in range(int(self.delta_mult)):
-            # Turning
-            if self.left - self.right:
-                self.rvelocity += (self.left - self.right) * TURN
-                if self.rvelocity < -TURN_MAX:
-                    self.rvelocity = -TURN_MAX
-                elif self.rvelocity > TURN_MAX:
-                    self.rvelocity = TURN_MAX
-
-            self.image_rotation += self.rvelocity
-
-            if abs(self.rvelocity) > TURN_FRICTION:
-                s = self.rvelocity / abs(self.rvelocity)
-                self.rvelocity -= s * TURN_FRICTION
+        if delta_mult:
+            vi = self.rvelocity
+            a = (self.left - self.right) * TURN
+            self.rvelocity += a * delta_mult
+            dc = -math.copysign(TURN_FRICTION * delta_mult, self.rvelocity)
+            if abs(self.rvelocity) > abs(dc):
+                a -= math.copysign(TURN_FRICTION, self.rvelocity)
+                self.rvelocity += dc
             else:
+                a -= self.rvelocity / delta_mult
                 self.rvelocity = 0
 
-            # Thrusting
-            if self.thrust:
-                direction = self.image_rotation + 90
-                self.xvelocity += math.cos(math.radians(direction)) * THRUST
-                self.yvelocity -= math.sin(math.radians(direction)) * THRUST
-                self.speed = min(self.speed, THRUST_MAX)
-
-            self.x += self.xvelocity
-            self.y += self.yvelocity
-
-        self.delta_mult -= int(self.delta_mult)
+            self.image_rotation += vi * delta_mult + 0.5 * a * (delta_mult ** 2)
+            super(Ship, self).event_update_position(delta_mult)
 
     def event_step(self, time_passed, delta_mult):
         # Shoot
         if self.shoot:
             self.do_shoot()
+
+        # Acceleration
+        if self.thrust:
+            direction = math.radians(self.image_rotation + 90)
+            self.xacceleration = math.cos(direction) * THRUST
+            self.yacceleration = -math.sin(direction) * THRUST
+            self.speed = min(self.speed, THRUST_MAX)
+        else:
+            self.xacceleration = 0
+            self.yacceleration = 0
+
+        if abs(self.rvelocity) > TURN_MAX:
+            self.rvelocity = math.copysign(TURN_MAX, self.rvelocity)
 
         # Bounce off edges
         if self.bbox_left < 0:
