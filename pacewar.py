@@ -1311,7 +1311,7 @@ def create_room():
 
 # Create Game object
 Game(width=1280, height=720, scale=SCALE, scale_smooth=True, fps=30,
-     delta=True, delta_min=15, window_text="Pacewar",
+     delta=True, delta_min=10, window_text="Pacewar",
      window_icon=os.path.join(DATA_IMAGES, "Spaceship15B.png"))
 
 # Load sprites
