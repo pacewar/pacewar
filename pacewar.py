@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
-__version__ = "1.5.5"
+__version__ = "1.5.6a0"
 
 import os
 import math
@@ -799,7 +799,7 @@ class Ship(sge.Object):
         if alarm_id == "shoot":
             self.can_shoot = True
 
-    def event_collision(self, other):
+    def event_collision(self, other, xdirection, ydirection):
         if isinstance(other, Bullet) and other.team != self.team:
             self.destroy()
             Explosion.create(self.x, self.y, self.z, sprite=explosion_sprite,
@@ -887,7 +887,7 @@ class Bullet(sge.Object):
         if alarm_id == "death":
             self.destroy()
 
-    def event_collision(self, other):
+    def event_collision(self, other, xdirection, ydirection):
         if isinstance(other, Ship) and other.team != self.team:
             self.destroy()
         elif isinstance(other, Bullet):
