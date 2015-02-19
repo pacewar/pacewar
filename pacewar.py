@@ -745,11 +745,11 @@ class Ship(sge.Object):
             direction = math.radians(self.image_rotation + 90)
             self.xacceleration = math.cos(direction) * THRUST
             self.yacceleration = -math.sin(direction) * THRUST
-            self.speed = min(self.speed, THRUST_MAX)
         else:
             self.xacceleration = 0
             self.yacceleration = 0
 
+        self.speed = min(self.speed, THRUST_MAX)
         if abs(self.rvelocity) > TURN_MAX:
             self.rvelocity = math.copysign(TURN_MAX, self.rvelocity)
 
