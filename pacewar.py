@@ -45,6 +45,7 @@ SCALE = 0.75
 JOYSTICK_THRESHOLD = 0.7
 
 TEAM_SIZE = 8
+ROUND_LIMIT = 10
 
 TEAM_RED = 0
 TEAM_GREEN = 1
@@ -75,7 +76,8 @@ MENU_JS_PLAYER1 = 4
 MENU_JS_PLAYER2 = 5
 MENU_ITEMS = {MENU_MAIN: ["1-player", "2-player", "Controls", "Quit"],
               MENU_START: ["1 point", "2 points", "3 points", "4 points",
-                            "5 points", "6 points", "Back"],
+                           "5 points", "6 points", "7 points", "8 points",
+                           "Back"],
               MENU_CONTROLS: ["Player 1 (keyboard)", "Player 1 (joystick)",
                               "Player 2 (keyboard)", "Player 2 (joystick)",
                               "Back"],
@@ -151,6 +153,7 @@ class Room(sge.Room):
 
     def event_room_start(self):
         self.score = 0
+        self.round_counter = 0
         self.started = False
         self.finished = False
         self.multiplayer = False
@@ -314,7 +317,7 @@ class Room(sge.Room):
                     elif self.menu_selection == 3:
                         sge.game.end()
                 elif self.menu == MENU_START:
-                    if self.menu_selection < 6:
+                    if self.menu_selection < 8:
                         points_to_win = self.menu_selection + 1
                         self.update_meter()
                         self.round_start()
@@ -532,9 +535,11 @@ class Room(sge.Room):
         if not music.playing:
             music.play(loops=None)
 
-        for i in range(max(1, TEAM_SIZE - max(self.score, 0))):
+        penalty = int(self.round_counter / ROUND_LIMIT)
+
+        for i in range(max(1, TEAM_SIZE - max(self.score, 0, penalty))):
             Ship.create(TEAM_GREEN)
-        for i in range(max(1, TEAM_SIZE + min(self.score, 0))):
+        for i in range(max(1, TEAM_SIZE + min(self.score, 0, penalty))):
             Ship.create(TEAM_RED)
 
         if self.multiplayer:
@@ -591,6 +596,11 @@ class Room(sge.Room):
 
     def round_end(self):
         if self.started:
+            if self.score > 0:
+                self.round_counter -= 1
+            elif self.score < 0:
+                self.round_counter += 1
+
             if abs(self.score) < points_to_win:
                 self.alarms["round_end"] = 90
             else:
