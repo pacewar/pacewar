@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
-__version__ = "1.5.6a0"
+__version__ = "1.6a0"
 
 import os
 import math
@@ -45,7 +45,7 @@ SCALE = 0.75
 JOYSTICK_THRESHOLD = 0.7
 
 TEAM_SIZE = 8
-ROUND_LIMIT = 10
+ROUND_TICK = 2
 
 TEAM_RED = 0
 TEAM_GREEN = 1
@@ -535,7 +535,13 @@ class Room(sge.Room):
         if not music.playing:
             music.play(loops=None)
 
-        penalty = int(self.round_counter / ROUND_LIMIT)
+        round_limit = points_to_win * 3 // 2
+        if abs(self.round_counter) >= round_limit:
+            penalty = int((self.round_counter -
+                           math.copysign(round_limit, self.round_counter)) /
+                          ROUND_TICK)
+        else:
+            penalty = 0
 
         for i in range(max(1, TEAM_SIZE - max(self.score, 0, penalty))):
             Ship.create(TEAM_GREEN)
@@ -1321,7 +1327,7 @@ def create_room():
 
 # Create Game object
 Game(width=1280, height=720, scale=SCALE, scale_smooth=True, fps=30,
-     delta=True, delta_min=10, window_text="Pacewar",
+     delta=True, delta_min=15, window_text="Pacewar",
      window_icon=os.path.join(DATA_IMAGES, "Spaceship15B.png"))
 
 # Load sprites

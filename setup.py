@@ -39,15 +39,16 @@ executables = [
 ]
 
 setup(name = "Pacewar",
-      version = "1.5.6a0",
+      version = "1.6a0",
       description = "A fighting game with lots of ships",
       author = "Julian Marchant",
       author_email = "onpon4@riseup.net",
       classifiers = ["Development Status :: 6 - Mature",
                      "License :: DFSG approved",
-                     "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+                     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
                      "Natural Language :: English",
                      "Operating System :: OS Independent",
+                     "Programming Language :: Python :: 2",
                      "Programming Language :: Python :: 3",
                      "Topic :: Games/Entertainment :: Arcade"],
       license = "GNU General Public License",
