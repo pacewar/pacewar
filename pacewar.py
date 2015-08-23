@@ -986,7 +986,7 @@ class Human(Controller):
         self.parent.right = self.parent.right or js_states[2]
         self.parent.shoot = self.parent.shoot or js_states[3]
 
-    def event_step(self, time_passed, delta_mult):
+    def event_end_step(self, time_passed, delta_mult):
         if (self.parent is not None and
                 self.parent in sge.game.current_room.objects):
             self.x = self.parent.x
@@ -1326,7 +1326,8 @@ def create_room():
                       ROOM_HEIGHT // 2 - VIEW_HEIGHT // 2, width=VIEW_WIDTH,
                       height=VIEW_HEIGHT)]
     return Room(width=ROOM_WIDTH, height=ROOM_HEIGHT, views=views,
-                background=background)
+                background=background, object_area_width=64,
+                object_area_height=64)
 
 
 # Create Game object
