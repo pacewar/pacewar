@@ -32,7 +32,7 @@ Otherwise, you will need to run the game from source. To do this, you
 will need the following dependencies:
 
 - Python 2 (2.7 or later) or 3 (3.1 or later) <http://www.python.org>
-- SGE Game Engine 0.16 <http://stellarengine.nongnu.org>
+- SGE Game Engine 0.20 <http://stellarengine.nongnu.org>
 
 Once you have installed the dependencies, you can start Pacewar by
 running pacewar.py. By default, it will use Python 3. To run it with
