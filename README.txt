@@ -34,11 +34,20 @@ will need the following dependencies:
 - Python 2 (2.7 or later) or 3 (3.1 or later) <http://www.python.org>
 - Pygame 1.9.1 or later <http://pygame.org/download.shtml>
 
+If you have downloaded a version of Pacewar designated for a particular
+system, these dependencies can be found under the "deps" folder.  Please
+see any "README" files in that folder for instructions and tips.
+
 Once you have installed the dependencies, you can start Pacewar by
-running pacewar.py. By default, it will use Python 3. To run it with
-Python 2 instead, you can either change the shebang on line 1 from
-"python3" to "python2", or explicitly run the Python 2 executable, e.g.
-with "python2 pacewar.py".
+running pacewar.py. On most systems, this should be done by
+double-clicking on it; if you are shown a dialog asking you if you want
+to display or run the file, choose to run it.
+
+Python 2 will be used by default. To run Pacewar with Python 3 instead,
+you can either change the shebang on line 1 from "python2" to "python3",
+or explicitly run the Python 3 executable, e.g. with
+"python3 pacewar.py" (the exact command may be different depending on
+your system).
 
 HOW TO PLAY
 
