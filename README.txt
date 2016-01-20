@@ -1,4 +1,4 @@
-Copyright (C) 2014, 2015 Julian Marchant <onpon4@riseup.net>
+Copyright (C) 2014, 2015, 2016 Julian Marchant <onpon4@riseup.net>
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
@@ -25,11 +25,7 @@ one of your team's ships.
 
 HOW TO RUN
 
-If you have obtained a frozen binary for your system, you can simply run
-the executable, which should be called something like "pacewar".
-
-Otherwise, you will need to run the game from source. To do this, you
-will need the following dependencies:
+To run Pacewar, you will need the following dependencies:
 
 - Python 2 (2.7 or later) or 3 (3.1 or later) <http://www.python.org>
 - Pygame 1.9.1 or later <http://pygame.org/download.shtml>
