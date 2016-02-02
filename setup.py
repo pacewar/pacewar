@@ -1,5 +1,5 @@
 # setup.py
-# Copyright (C) 2014, 2015 Julian Marchant <onpon4@riseup.net>
+# Copyright (C) 2014-2016 onpon4 <onpon4@riseup.net>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -39,9 +39,9 @@ executables = [
 ]
 
 setup(name = "Pacewar",
-      version = "1.6.3",
+      version = "1.6.4a0",
       description = "A fighting game with lots of ships",
-      author = "Julian Marchant",
+      author = "onpon4",
       author_email = "onpon4@riseup.net",
       classifiers = ["Development Status :: 6 - Mature",
                      "License :: DFSG approved",

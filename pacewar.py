@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 
 # Pacewar
-# Copyright (C) 2014, 2015 Julian Marchant <onpon4@riseup.net>
+# Copyright (C) 2014-2016 onpon4 <onpon4@riseup.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
-__version__ = "1.6.3"
+__version__ = "1.6.4a0"
 
 import sys
 import os
@@ -118,7 +118,7 @@ player2_js_right = (1, "axis+", 0)
 player2_js_shoot = (1, "button", 1)
 
 
-class Game(sge.Game):
+class Game(sge.dsp.Game):
 
     def event_step(self, time_passed, delta_mult):
         x = self.width / 2 - meter_sprite.width / 2
@@ -133,7 +133,7 @@ class Game(sge.Game):
             self.current_room.update_meter()
         elif key == "f8":
             fname = "screenshot-{}.bmp".format(round(time.time(), 3))
-            sge.Sprite.from_screenshot().save(fname)
+            sge.gfx.Sprite.from_screenshot().save(fname)
         elif key == "f11":
             if self.fullscreen:
                 self.scale = SCALE
@@ -153,7 +153,7 @@ class Game(sge.Game):
         self.event_close()
 
 
-class Room(sge.Room):
+class Room(sge.dsp.Room):
 
     def event_room_start(self):
         self.score = 0
@@ -235,7 +235,7 @@ class Room(sge.Room):
             if (self.menu_sprite is None or
                     (self.menu_sprite.width != menu_w or
                      self.menu_sprite.height != menu_h)):
-                self.menu_sprite = sge.Sprite(width=menu_w, height=menu_h)
+                self.menu_sprite = sge.gfx.Sprite(width=menu_w, height=menu_h)
 
             self.menu_sprite.draw_lock()
             self.menu_sprite.draw_clear()
@@ -246,7 +246,7 @@ class Room(sge.Room):
                 x = MENU_BORDER
                 y = MENU_BORDER + (line_h + MENU_SPACING) * i
                 self.menu_sprite.draw_text(font, menu_items[i], x, y,
-                                           color=sge.Color("white"))
+                                           color=sge.gfx.Color("white"))
 
             self.menu_sprite.draw_unlock()
             sge.game.project_sprite(self.menu_sprite, 0,
@@ -436,10 +436,10 @@ class Room(sge.Room):
                     self.menu_selection = 3
         else:
             if key == "escape":
-                sge.Music.stop(fade_time=500)
+                sge.snd.Music.stop(fade_time=500)
                 create_room().start("dissolve", 500)
             elif key == "enter":
-                sge.Music.pause()
+                sge.snd.Music.pause()
                 select_sound.play()
                 sge.game.pause()
 
@@ -469,11 +469,11 @@ class Room(sge.Room):
 
     def event_paused_key_press(self, key, char):
         if key == "enter":
-            sge.Music.unpause()
+            sge.snd.Music.unpause()
             select_sound.play()
             sge.game.unpause()
         elif key == "escape":
-            sge.Music.stop()
+            sge.snd.Music.stop()
             create_room().start()
 
     def update_meter(self):
@@ -483,13 +483,13 @@ class Room(sge.Room):
                    meter_center_sprite.width +
                    meter_back_sprite.width * points_to_win * 2)
         if meter_sprite.width != meter_w:
-            meter_sprite = sge.Sprite(width=meter_w, height=16)
+            meter_sprite = sge.gfx.Sprite(width=meter_w, height=16)
 
         w = meter_back_sprite.width
         h = meter_back_sprite.height
 
-        green_meter = sge.Sprite(width=(w * points_to_win), height=h)
-        red_meter = sge.Sprite(width=green_meter.width, height=h)
+        green_meter = sge.gfx.Sprite(width=(w * points_to_win), height=h)
+        red_meter = sge.gfx.Sprite(width=green_meter.width, height=h)
 
         green_meter.draw_lock()
         red_meter.draw_lock()
@@ -553,11 +553,12 @@ class Room(sge.Room):
             Ship.create(TEAM_RED)
 
         if self.multiplayer:
-            self.views = [sge.View(0, 0, width=(VIEW_WIDTH / 2),
-                                   height=VIEW_HEIGHT),
-                          sge.View(ROOM_WIDTH, ROOM_HEIGHT,
-                                   xport=(VIEW_WIDTH / 2),
-                                   width=(VIEW_WIDTH / 2), height=VIEW_HEIGHT)]
+            self.views = [sge.dsp.View(0, 0, width=(VIEW_WIDTH / 2),
+                                       height=VIEW_HEIGHT),
+                          sge.dsp.View(ROOM_WIDTH, ROOM_HEIGHT,
+                                       xport=(VIEW_WIDTH / 2),
+                                       width=(VIEW_WIDTH / 2),
+                                       height=VIEW_HEIGHT)]
 
             p1ship = random.choice(ships_lists[TEAM_GREEN])
             player1 = Human.create(p1ship, 1,
@@ -585,8 +586,8 @@ class Room(sge.Room):
             p2ship.controller.destroy()
             p2ship.controller = player2
         else:
-            self.views = [sge.View(ROOM_WIDTH, ROOM_HEIGHT,
-                                   width=VIEW_WIDTH, height=VIEW_HEIGHT)]
+            self.views = [sge.dsp.View(ROOM_WIDTH, ROOM_HEIGHT,
+                                       width=VIEW_WIDTH, height=VIEW_HEIGHT)]
 
             p1ship = random.choice(ships_lists[TEAM_GREEN])
             player1 = Human.create(p1ship, 0,
@@ -615,7 +616,7 @@ class Room(sge.Room):
                 self.alarms["round_end"] = 90
             else:
                 self.finished = True
-                sge.Music.stop(fade_time=5000)
+                sge.snd.Music.stop(fade_time=5000)
         else:
             if self.score:
                 loser = TEAM_RED if self.score > 0 else TEAM_GREEN
@@ -654,7 +655,7 @@ class Room(sge.Room):
             sge.game.project_text(menu_font, text, sge.game.width / 2,
                                   sge.game.height / 2, width=sge.game.width,
                                   height=sge.game.height,
-                                  color=sge.Color("white"),
+                                  color=sge.gfx.Color("white"),
                                   halign="center", valign="middle")
 
             # Refresh
@@ -707,14 +708,14 @@ class Room(sge.Room):
             sge.game.project_text(menu_font, text, sge.game.width / 2,
                                   sge.game.height / 2, width=sge.game.width,
                                   height=sge.game.height,
-                                  color=sge.Color("white"),
+                                  color=sge.gfx.Color("white"),
                                   halign="center", valign="middle")
 
             # Refresh
             sge.game.refresh()
 
 
-class Ship(sge.Object):
+class Ship(sge.dsp.Object):
 
     def __init__(self, team):
         super(Ship, self).__init__(random.randrange(*START_X_RANGE[team]),
@@ -796,7 +797,7 @@ class Ship(sge.Object):
         # Display exhaust
         if self.thrust:
             if self.thrust_obj is None:
-                self.thrust_obj = sge.Object.create(
+                self.thrust_obj = sge.dsp.Object.create(
                     self.x, self.y, -1,
                     sprite=exhaust_sprites[id(self.sprite)], tangible=False,
                     regulate_origin=True, image_xscale=self.image_xscale,
@@ -877,13 +878,13 @@ class Ship(sge.Object):
                 shoot_sound.play(volume=50)
 
 
-class Explosion(sge.Object):
+class Explosion(sge.dsp.Object):
 
     def event_animation_end(self):
         self.destroy()
 
 
-class Bullet(sge.Object):
+class Bullet(sge.dsp.Object):
 
     def __init__(self, team, *args, **kwargs):
         super(Bullet, self).__init__(*args, **kwargs)
@@ -922,7 +923,7 @@ class Bullet(sge.Object):
                 dissipate_sound.play()
 
 
-class Controller(sge.Object):
+class Controller(sge.dsp.Object):
 
     def __init__(self, parent):
         super(Controller, self).__init__(0, 0, visible=False, tangible=False)
@@ -938,8 +939,8 @@ class Human(Controller):
     def __init__(self, parent, view, key_thrust="up", key_left="left",
                  key_right="right", key_shoot="space", js_thrust=None,
                  js_left=None, js_right=None, js_shoot=None):
-        sge.Object.__init__(self, parent.x, parent.y, sprite=target_sprite,
-                            tangible=False)
+        sge.dsp.Object.__init__(self, parent.x, parent.y, sprite=target_sprite,
+                                tangible=False)
         self.parent = parent
         self.team = parent.team
         self.view = view
@@ -1308,8 +1309,8 @@ class AI(Controller):
 
 def create_nebula(num, z, scroll_rate):
     # Create a nebula background layer and return it.
-    sprite = sge.Sprite(width=max(ROOM_WIDTH, ROOM_WIDTH * scroll_rate),
-                        height=max(ROOM_HEIGHT, ROOM_HEIGHT * scroll_rate))
+    sprite = sge.gfx.Sprite(width=max(ROOM_WIDTH, ROOM_WIDTH * scroll_rate),
+                            height=max(ROOM_HEIGHT, ROOM_HEIGHT * scroll_rate))
     layers = []
     for i in range(num):
         nebula_sprite = random.choice(nebula_sprites)
@@ -1317,14 +1318,14 @@ def create_nebula(num, z, scroll_rate):
         y = random.randrange(max(1, int(sprite.height - nebula_sprite.height)))
         sprite.draw_sprite(nebula_sprite, 0, x, y)
 
-    return sge.BackgroundLayer(sprite, 0, 0, z, xscroll_rate=scroll_rate,
-                               yscroll_rate=scroll_rate)
+    return sge.gfx.BackgroundLayer(sprite, 0, 0, z, xscroll_rate=scroll_rate,
+                                   yscroll_rate=scroll_rate)
 
 
 def create_room():
-    views = [sge.View(ROOM_WIDTH // 2 - VIEW_WIDTH // 2,
-                      ROOM_HEIGHT // 2 - VIEW_HEIGHT // 2, width=VIEW_WIDTH,
-                      height=VIEW_HEIGHT)]
+    views = [sge.dsp.View(ROOM_WIDTH // 2 - VIEW_WIDTH // 2,
+                          ROOM_HEIGHT // 2 - VIEW_HEIGHT // 2,
+                          width=VIEW_WIDTH, height=VIEW_HEIGHT)]
     return Room(width=ROOM_WIDTH, height=ROOM_HEIGHT, views=views,
                 background=background, object_area_width=64,
                 object_area_height=64)
@@ -1336,24 +1337,30 @@ Game(width=1280, height=720, scale=SCALE, scale_smooth=True, fps=30,
      window_icon=os.path.join(DATA_IMAGES, "Spaceship15B.png"))
 
 # Load sprites
-r1_sprite = sge.Sprite("Spaceship14", DATA_IMAGES, origin_x=83, origin_y=154,
-                       bbox_x=-17, bbox_y=-17, bbox_width=33, bbox_height=33)
-g1_sprite = sge.Sprite("Spaceship14B", DATA_IMAGES, origin_x=83, origin_y=154,
-                       bbox_x=-17, bbox_y=-17, bbox_width=33, bbox_height=33)
-r2_sprite = sge.Sprite("Spaceship15", DATA_IMAGES, origin_x=80, origin_y=91,
-                       bbox_x=-16, bbox_y=-16, bbox_width=32, bbox_height=32)
-g2_sprite = sge.Sprite("Spaceship15B", DATA_IMAGES, origin_x=80, origin_y=91,
-                       bbox_x=-16, bbox_y=-16, bbox_width=32, bbox_height=32)
-r3_sprite = sge.Sprite("Spaceship16", DATA_IMAGES, origin_x=69, origin_y=92,
-                       bbox_x=-14, bbox_y=-14, bbox_width=28, bbox_height=28)
-g3_sprite = sge.Sprite("Spaceship16B", DATA_IMAGES, origin_x=69, origin_y=92,
-                       bbox_x=-14, bbox_y=-14, bbox_width=28, bbox_height=28)
-e1_sprite = sge.Sprite("Exhaust14", DATA_IMAGES, origin_x=31, origin_y=-65,
-                       fps=60)
-e2_sprite = sge.Sprite("Exhaust15", DATA_IMAGES, origin_x=35, origin_y=-44,
-                       fps=60)
-e3_sprite = sge.Sprite("Exhaust16", DATA_IMAGES, origin_x=14, origin_y=-48,
-                       fps=60)
+r1_sprite = sge.gfx.Sprite(
+    "Spaceship14", DATA_IMAGES, origin_x=83, origin_y=154, bbox_x=-17,
+    bbox_y=-17, bbox_width=33, bbox_height=33)
+g1_sprite = sge.gfx.Sprite(
+    "Spaceship14B", DATA_IMAGES, origin_x=83, origin_y=154, bbox_x=-17,
+    bbox_y=-17, bbox_width=33, bbox_height=33)
+r2_sprite = sge.gfx.Sprite(
+    "Spaceship15", DATA_IMAGES, origin_x=80, origin_y=91, bbox_x=-16,
+    bbox_y=-16, bbox_width=32, bbox_height=32)
+g2_sprite = sge.gfx.Sprite(
+    "Spaceship15B", DATA_IMAGES, origin_x=80, origin_y=91, bbox_x=-16,
+    bbox_y=-16, bbox_width=32, bbox_height=32)
+r3_sprite = sge.gfx.Sprite(
+    "Spaceship16", DATA_IMAGES, origin_x=69, origin_y=92, bbox_x=-14,
+    bbox_y=-14, bbox_width=28, bbox_height=28)
+g3_sprite = sge.gfx.Sprite(
+    "Spaceship16B", DATA_IMAGES, origin_x=69, origin_y=92, bbox_x=-14,
+    bbox_y=-14, bbox_width=28, bbox_height=28)
+e1_sprite = sge.gfx.Sprite("Exhaust14", DATA_IMAGES, origin_x=31, origin_y=-65,
+                           fps=60)
+e2_sprite = sge.gfx.Sprite("Exhaust15", DATA_IMAGES, origin_x=35, origin_y=-44,
+                           fps=60)
+e3_sprite = sge.gfx.Sprite("Exhaust16", DATA_IMAGES, origin_x=14, origin_y=-48,
+                           fps=60)
 
 ship_sprites = {TEAM_RED: [r1_sprite, r2_sprite, r3_sprite],
                 TEAM_GREEN: [g1_sprite, g2_sprite, g3_sprite]}
@@ -1361,54 +1368,58 @@ exhaust_sprites = {id(r1_sprite): e1_sprite, id(g1_sprite): e1_sprite,
                    id(r2_sprite): e2_sprite, id(g2_sprite): e2_sprite,
                    id(r3_sprite): e3_sprite, id(g3_sprite): e3_sprite}
 
-explosion_sprite = sge.Sprite("explosion", DATA_IMAGES, origin_x=64,
-                              origin_y=64, fps=30)
-bullet_sprites = {TEAM_RED: sge.Sprite("bullet_red", DATA_IMAGES, origin_x=8,
-                                       origin_y=16),
-                  TEAM_GREEN: sge.Sprite("bullet_green", DATA_IMAGES,
-                                         origin_x=8, origin_y=16)}
-stars_sprite = sge.Sprite("Stars", DATA_IMAGES)
-nebula_sprites = [sge.Sprite("Nebula1", DATA_IMAGES),
-                  sge.Sprite("Nebula2", DATA_IMAGES),
-                  sge.Sprite("Nebula3", DATA_IMAGES)]
-target_sprite = sge.Sprite("target", DATA_IMAGES, width=80, height=80,
-                           origin_x=40, origin_y=40)
-logo_sprite = sge.Sprite("logo", DATA_IMAGES, origin_x=321)
-colorblind_sprites = {TEAM_RED: sge.Sprite("colorblind_red", DATA_IMAGES),
-                      TEAM_GREEN: sge.Sprite("colorblind_green", DATA_IMAGES)}
-font_sprite = sge.Sprite("font", DATA_IMAGES)
-font_selected_sprite = sge.Sprite("font_selected", DATA_IMAGES)
-meter_left_sprite = sge.Sprite("meter_left", DATA_IMAGES)
-meter_right_sprite = sge.Sprite("meter_right", DATA_IMAGES)
-meter_center_sprite = sge.Sprite("meter_center", DATA_IMAGES)
-meter_back_sprite = sge.Sprite("meter_back", DATA_IMAGES)
-meter_sprites = {TEAM_RED: sge.Sprite("meter_red", DATA_IMAGES, origin_x=37),
-                 TEAM_GREEN: sge.Sprite("meter_green", DATA_IMAGES)}
+explosion_sprite = sge.gfx.Sprite("explosion", DATA_IMAGES, origin_x=64,
+                                  origin_y=64, fps=30)
+bullet_sprites = {TEAM_RED: sge.gfx.Sprite("bullet_red", DATA_IMAGES,
+                                           origin_x=8, origin_y=16),
+                  TEAM_GREEN: sge.gfx.Sprite("bullet_green", DATA_IMAGES,
+                                             origin_x=8, origin_y=16)}
+stars_sprite = sge.gfx.Sprite("Stars", DATA_IMAGES)
+nebula_sprites = [sge.gfx.Sprite("Nebula1", DATA_IMAGES),
+                  sge.gfx.Sprite("Nebula2", DATA_IMAGES),
+                  sge.gfx.Sprite("Nebula3", DATA_IMAGES)]
+target_sprite = sge.gfx.Sprite("target", DATA_IMAGES, width=80, height=80,
+                               origin_x=40, origin_y=40)
+logo_sprite = sge.gfx.Sprite("logo", DATA_IMAGES, origin_x=321)
+colorblind_sprites = {TEAM_RED: sge.gfx.Sprite("colorblind_red", DATA_IMAGES),
+                      TEAM_GREEN: sge.gfx.Sprite("colorblind_green",
+                                                 DATA_IMAGES)}
+font_sprite = sge.gfx.Sprite("font", DATA_IMAGES)
+font_selected_sprite = sge.gfx.Sprite("font_selected", DATA_IMAGES)
+meter_left_sprite = sge.gfx.Sprite("meter_left", DATA_IMAGES)
+meter_right_sprite = sge.gfx.Sprite("meter_right", DATA_IMAGES)
+meter_center_sprite = sge.gfx.Sprite("meter_center", DATA_IMAGES)
+meter_back_sprite = sge.gfx.Sprite("meter_back", DATA_IMAGES)
+meter_sprites = {TEAM_RED: sge.gfx.Sprite("meter_red", DATA_IMAGES,
+                                          origin_x=37),
+                 TEAM_GREEN: sge.gfx.Sprite("meter_green", DATA_IMAGES)}
 meter_w = (meter_left_sprite.width + meter_right_sprite.width +
            meter_center_sprite.width +
            meter_back_sprite.width * points_to_win * 2)
-meter_sprite = sge.Sprite(width=meter_w, height=16)
+meter_sprite = sge.gfx.Sprite(width=meter_w, height=16)
 
 # Load backgrounds
 layers = []
-layers.append(sge.BackgroundLayer(stars_sprite, 0, 0, -1000, xscroll_rate=0.05,
-                                  yscroll_rate=0.01, repeat_left=True,
-                                  repeat_right=True, repeat_up=True,
-                                  repeat_down=True))
+layers.append(sge.gfx.BackgroundLayer(stars_sprite, 0, 0, -1000,
+                                      xscroll_rate=0.05, yscroll_rate=0.01,
+                                      repeat_left=True, repeat_right=True,
+                                      repeat_up=True, repeat_down=True))
 layers.append(create_nebula(15, -100, 0.1))
 layers.append(create_nebula(30, -50, 0.5))
 layers.append(create_nebula(5, 5, 1))
 
-background = sge.Background(layers, sge.Color("black"))
+background = sge.gfx.Background(layers, sge.gfx.Color("black"))
 
 # Load sounds
-shoot_sound = sge.Sound(os.path.join(DATA_SOUNDS, "shoot.wav"))
-explode_sound = sge.Sound(os.path.join(DATA_SOUNDS, "explode.wav"))
-dissipate_sound = sge.Sound(os.path.join(DATA_SOUNDS, "dissipate.ogg"))
-select_sound = sge.Sound(os.path.join(DATA_SOUNDS, "select.ogg"), volume=50)
+shoot_sound = sge.snd.Sound(os.path.join(DATA_SOUNDS, "shoot.wav"))
+explode_sound = sge.snd.Sound(os.path.join(DATA_SOUNDS, "explode.wav"))
+dissipate_sound = sge.snd.Sound(os.path.join(DATA_SOUNDS, "dissipate.ogg"))
+select_sound = sge.snd.Sound(os.path.join(DATA_SOUNDS, "select.ogg"),
+                             volume=50)
 
 # Load music
-music = sge.Music(os.path.join(DATA_MUSIC, "DST-RailJet-LongSeamlessLoop.ogg"))
+music = sge.snd.Music(os.path.join(DATA_MUSIC,
+                                   "DST-RailJet-LongSeamlessLoop.ogg"))
 
 # Load fonts
 chars = [' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',',
@@ -1419,8 +1430,8 @@ chars = [' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',',
          'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
          'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
          '{', '|', '}', '~']
-menu_font = sge.Font.from_sprite(font_sprite, chars, size=24)
-selection_font = sge.Font.from_sprite(font_selected_sprite, chars, size=24)
+menu_font = sge.gfx.Font.from_sprite(font_sprite, chars, size=24)
+selection_font = sge.gfx.Font.from_sprite(font_selected_sprite, chars, size=24)
 
 # Create room
 sge.game.start_room = create_room()
