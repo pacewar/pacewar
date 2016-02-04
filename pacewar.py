@@ -743,7 +743,7 @@ class Ship(sge.dsp.Object):
     def event_update_position(self, delta_mult):
         if delta_mult:
             vi = self.rvelocity
-            a = (self.left - self.right) * TURN
+            a = (self.right - self.left) * TURN
             self.rvelocity += a * delta_mult
             dc = -math.copysign(TURN_FRICTION * delta_mult, self.rvelocity)
             if abs(self.rvelocity) > abs(dc):
@@ -763,9 +763,9 @@ class Ship(sge.dsp.Object):
 
         # Acceleration
         if self.thrust:
-            direction = math.radians(self.image_rotation + 90)
+            direction = math.radians(self.image_rotation + 270)
             self.xacceleration = math.cos(direction) * THRUST
-            self.yacceleration = -math.sin(direction) * THRUST
+            self.yacceleration = math.sin(direction) * THRUST
         else:
             self.xacceleration = 0
             self.yacceleration = 0
@@ -857,7 +857,7 @@ class Ship(sge.dsp.Object):
                                    collision_precise=True,
                                    image_rotation=self.image_rotation)
             bullet.speed = BULLET_SPEED
-            bullet.move_direction = bullet.image_rotation + 90
+            bullet.move_direction = bullet.image_rotation + 270
             bullet.xvelocity += self.xvelocity
             bullet.yvelocity += self.yvelocity
             self.can_shoot = False
@@ -1202,46 +1202,46 @@ class AI(Controller):
                 left_ok = True
                 right_ok = True
 
-                direction = (self.parent.image_rotation + 90) % 360
+                direction = (self.parent.image_rotation + 270) % 360
 
                 if self.parent.x <= DANGER_DISTANCE:
                     if 90 < direction < 180:
-                        left_ok = False
-                    elif 180 < direction < 270:
                         right_ok = False
+                    elif 180 < direction < 270:
+                        left_ok = False
                 elif self.parent.x >= (sge.game.current_room.width -
                                        DANGER_DISTANCE):
                     if 0 < direction < 90:
-                        right_ok = False
-                    elif 270 < direction > 360:
                         left_ok = False
+                    elif 270 < direction > 360:
+                        right_ok = False
 
                 if self.parent.y <= DANGER_DISTANCE:
                     if 0 < direction < 90:
-                        left_ok = False
-                    elif 90 < direction < 180:
                         right_ok = False
+                    elif 90 < direction < 180:
+                        left_ok = False
                 elif self.parent.y >= (sge.game.current_room.height -
                                        DANGER_DISTANCE):
                     if 180 < direction < 270:
-                        left_ok = False
-                    elif 270 < direction < 360:
                         right_ok = False
+                    elif 270 < direction < 360:
+                        left_ok = False
 
                 for threat in self.threats:
                     if thrust_ok or left_ok or right_ok:
                         threat_direction = math.degrees(math.atan2(
-                            self.parent.y - threat.y,
+                            threat.y - self.parent.y,
                             threat.x - self.parent.x))
                         diff = (threat_direction - direction) % 360
                         if diff <= DANGER_ANGLE or diff >= 360 - DANGER_ANGLE:
                             thrust_ok = False
                             self.parent.do_shoot()
                         elif DANGER_ANGLE < diff <= 2 * DANGER_ANGLE:
-                            left_ok = False
+                            right_ok = False
                         elif (360 - 2 * DANGER_ANGLE <= diff <
                               360 - DANGER_ANGLE):
-                            right_ok = False
+                            left_ok = False
 
                 if thrust_ok:
                     self.parent.thrust = True
@@ -1259,14 +1259,14 @@ class AI(Controller):
                     dist = math.hypot(self.target.x - self.parent.x,
                                       self.target.y - self.parent.y)
                     target_angle = math.degrees(
-                        math.atan2(self.parent.y - self.target.y,
+                        math.atan2(self.target.y - self.parent.y,
                                    self.target.x - self.parent.x))
                     diff = (target_angle -
-                            (self.parent.image_rotation + 90)) % 360
+                            (self.parent.image_rotation + 270)) % 360
                     if 2 < diff < 180:
-                        self.parent.left = True
-                    elif 180 <= diff < 358:
                         self.parent.right = True
+                    elif 180 <= diff < 358:
+                        self.parent.left = True
 
                     if diff <= 10 or diff >= 350:
                         if dist > BULLET_SPEED * BULLET_LIFE:
@@ -1297,9 +1297,9 @@ class AI(Controller):
                 for pt in potential_threats:
                     dist = math.hypot(pt.x - self.parent.x,
                                       pt.y - self.parent.y)
-                    direction = (pt.image_rotation + 90) % 360
+                    direction = (pt.image_rotation + 270) % 360
                     pt_direction = math.degrees(math.atan2(
-                        pt.y - self.parent.y, self.parent.x - pt.x)) % 360
+                        self.parent.y - pt.y, self.parent.x - pt.x)) % 360
                     diff = abs(pt_direction - direction)
                     if (dist <= DANGER_DISTANCE and
                             diff <= DANGER_ANGLE):
