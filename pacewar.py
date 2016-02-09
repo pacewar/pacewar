@@ -835,7 +835,7 @@ class Ship(sge.dsp.Object):
             if in_range:
                 explode_sound.play()
             else:
-                explode_sound.play(volume=50)
+                explode_sound.play(volume=0.5)
 
     def event_destroy(self):
         global ships_lists
@@ -875,7 +875,7 @@ class Ship(sge.dsp.Object):
             if in_range:
                 shoot_sound.play()
             else:
-                shoot_sound.play(volume=50)
+                shoot_sound.play(volume=0.5)
 
 
 class Explosion(sge.dsp.Object):
@@ -1415,7 +1415,7 @@ shoot_sound = sge.snd.Sound(os.path.join(DATA_SOUNDS, "shoot.wav"))
 explode_sound = sge.snd.Sound(os.path.join(DATA_SOUNDS, "explode.wav"))
 dissipate_sound = sge.snd.Sound(os.path.join(DATA_SOUNDS, "dissipate.ogg"))
 select_sound = sge.snd.Sound(os.path.join(DATA_SOUNDS, "select.ogg"),
-                             volume=50)
+                             volume=0.5)
 
 # Load music
 music = sge.snd.Music(os.path.join(DATA_MUSIC,
