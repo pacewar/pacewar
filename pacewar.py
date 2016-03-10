@@ -1374,7 +1374,7 @@ bullet_sprites = {TEAM_RED: sge.gfx.Sprite("bullet_red", DATA_IMAGES,
                                            origin_x=8, origin_y=16),
                   TEAM_GREEN: sge.gfx.Sprite("bullet_green", DATA_IMAGES,
                                              origin_x=8, origin_y=16)}
-stars_sprite = sge.gfx.Sprite("Stars", DATA_IMAGES)
+stars_sprite = sge.gfx.Sprite("Stars", DATA_IMAGES, transparent=False)
 nebula_sprites = [sge.gfx.Sprite("Nebula1", DATA_IMAGES),
                   sge.gfx.Sprite("Nebula2", DATA_IMAGES),
                   sge.gfx.Sprite("Nebula3", DATA_IMAGES)]
