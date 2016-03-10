@@ -1388,8 +1388,8 @@ font_sprite = sge.gfx.Sprite("font", DATA_IMAGES)
 font_selected_sprite = sge.gfx.Sprite("font_selected", DATA_IMAGES)
 meter_left_sprite = sge.gfx.Sprite("meter_left", DATA_IMAGES)
 meter_right_sprite = sge.gfx.Sprite("meter_right", DATA_IMAGES)
-meter_center_sprite = sge.gfx.Sprite("meter_center", DATA_IMAGES)
-meter_back_sprite = sge.gfx.Sprite("meter_back", DATA_IMAGES)
+meter_center_sprite = sge.gfx.Sprite("meter_center", DATA_IMAGES, transparent=False)
+meter_back_sprite = sge.gfx.Sprite("meter_back", DATA_IMAGES, transparent=False)
 meter_sprites = {TEAM_RED: sge.gfx.Sprite("meter_red", DATA_IMAGES,
                                           origin_x=37),
                  TEAM_GREEN: sge.gfx.Sprite("meter_green", DATA_IMAGES)}
