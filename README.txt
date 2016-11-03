@@ -28,7 +28,8 @@ HOW TO RUN
 If you have downloaded a version of Pacewar designated for a particular
 system, simply run the exectuable.
 
-To run Pacewar source code, you will need the following dependencies:
+To run the Pacewar source code, you will need the following
+dependencies:
 
 - Python 2 (2.7 or later) or 3 (3.1 or later) <http://www.python.org>
 - Pygame 1.9.1 or later <http://pygame.org/download.shtml>
