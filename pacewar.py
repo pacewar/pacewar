@@ -149,6 +149,9 @@ class Game(sge.dsp.Game):
     def event_close(self):
         self.end()
 
+    def event_paused_step(self, time_passed, delta_mult):
+        self.event_step(time_passed, delta_mult)
+
     def event_paused_close(self):
         self.event_close()
 
@@ -441,7 +444,7 @@ class Room(sge.dsp.Room):
             elif key == "enter":
                 sge.snd.Music.pause()
                 select_sound.play()
-                sge.game.pause()
+                sge.game.pause(pause_sprite)
 
     def event_joystick_axis_move(self, js_name, js_id, axis, value):
         if not self.started:
@@ -474,6 +477,7 @@ class Room(sge.dsp.Room):
             sge.game.unpause()
         elif key == "escape":
             sge.snd.Music.stop()
+            sge.game.unpause()
             create_room().start()
 
     def update_meter(self):
@@ -1432,6 +1436,12 @@ chars = [' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',',
          '{', '|', '}', '~']
 menu_font = sge.gfx.Font.from_sprite(font_sprite, chars, size=24)
 selection_font = sge.gfx.Font.from_sprite(font_selected_sprite, chars, size=24)
+
+pause_sprite = sge.gfx.Sprite.from_text(menu_font, "Paused")
+sge.game.scale_method = "noblur"
+pause_sprite.width *= 2
+pause_sprite.height *= 2
+sge.game.scale_method = "smooth"
 
 # Create room
 sge.game.start_room = create_room()
