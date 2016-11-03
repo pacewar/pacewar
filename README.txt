@@ -25,14 +25,13 @@ one of your team's ships.
 
 HOW TO RUN
 
-To run Pacewar, you will need the following dependencies:
+If you have downloaded a version of Pacewar designated for a particular
+system, simply run the exectuable.
+
+To run Pacewar source code, you will need the following dependencies:
 
 - Python 2 (2.7 or later) or 3 (3.1 or later) <http://www.python.org>
 - Pygame 1.9.1 or later <http://pygame.org/download.shtml>
-
-If you have downloaded a version of Pacewar designated for a particular
-system, these dependencies can be found under the "deps" folder.  Please
-see any "README" files in that folder for instructions and tips.
 
 Once you have installed the dependencies, you can start Pacewar by
 running pacewar.py. On most systems, this should be done by
