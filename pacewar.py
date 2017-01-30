@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
-__version__ = "1.6.5"
+__version__ = "1.6.6a0"
 
 import sys
 import os
@@ -727,8 +727,7 @@ class Ship(sge.dsp.Object):
                                    sprite=random.choice(ship_sprites[team]),
                                    checks_collisions=False,
                                    regulate_origin=True,
-                                   collision_precise=True, image_xscale=0.2,
-                                   image_yscale=0.2,
+                                   collision_precise=True,
                                    image_rotation=random.randrange(360))
         self.team = team
 
@@ -824,8 +823,7 @@ class Ship(sge.dsp.Object):
         if isinstance(other, Bullet) and other.team != self.team:
             self.destroy()
             Explosion.create(self.x, self.y, self.z, sprite=explosion_sprite,
-                             regulate_origin=True, image_xscale=0.5,
-                             image_yscale=0.5)
+                             regulate_origin=True)
 
             in_range = False
             for view in sge.game.current_room.views:
@@ -1342,28 +1340,28 @@ Game(width=1280, height=720, scale=SCALE, scale_method="smooth", fps=30,
 
 # Load sprites
 r1_sprite = sge.gfx.Sprite(
-    "Spaceship14", DATA_IMAGES, origin_x=83, origin_y=154, bbox_x=-17,
+    "Spaceship14", DATA_IMAGES, origin_x=17, origin_y=31, bbox_x=-17,
     bbox_y=-17, bbox_width=33, bbox_height=33)
 g1_sprite = sge.gfx.Sprite(
-    "Spaceship14B", DATA_IMAGES, origin_x=83, origin_y=154, bbox_x=-17,
+    "Spaceship14B", DATA_IMAGES, origin_x=17, origin_y=31, bbox_x=-17,
     bbox_y=-17, bbox_width=33, bbox_height=33)
 r2_sprite = sge.gfx.Sprite(
-    "Spaceship15", DATA_IMAGES, origin_x=80, origin_y=91, bbox_x=-16,
+    "Spaceship15", DATA_IMAGES, origin_x=16, origin_y=18, bbox_x=-16,
     bbox_y=-16, bbox_width=32, bbox_height=32)
 g2_sprite = sge.gfx.Sprite(
-    "Spaceship15B", DATA_IMAGES, origin_x=80, origin_y=91, bbox_x=-16,
+    "Spaceship15B", DATA_IMAGES, origin_x=16, origin_y=18, bbox_x=-16,
     bbox_y=-16, bbox_width=32, bbox_height=32)
 r3_sprite = sge.gfx.Sprite(
-    "Spaceship16", DATA_IMAGES, origin_x=69, origin_y=92, bbox_x=-14,
+    "Spaceship16", DATA_IMAGES, origin_x=14, origin_y=18, bbox_x=-14,
     bbox_y=-14, bbox_width=28, bbox_height=28)
 g3_sprite = sge.gfx.Sprite(
-    "Spaceship16B", DATA_IMAGES, origin_x=69, origin_y=92, bbox_x=-14,
+    "Spaceship16B", DATA_IMAGES, origin_x=14, origin_y=18, bbox_x=-14,
     bbox_y=-14, bbox_width=28, bbox_height=28)
-e1_sprite = sge.gfx.Sprite("Exhaust14", DATA_IMAGES, origin_x=31, origin_y=-65,
+e1_sprite = sge.gfx.Sprite("Exhaust14", DATA_IMAGES, origin_x=6, origin_y=-13,
                            fps=60)
-e2_sprite = sge.gfx.Sprite("Exhaust15", DATA_IMAGES, origin_x=35, origin_y=-44,
+e2_sprite = sge.gfx.Sprite("Exhaust15", DATA_IMAGES, origin_x=7, origin_y=-9,
                            fps=60)
-e3_sprite = sge.gfx.Sprite("Exhaust16", DATA_IMAGES, origin_x=14, origin_y=-48,
+e3_sprite = sge.gfx.Sprite("Exhaust16", DATA_IMAGES, origin_x=3, origin_y=-10,
                            fps=60)
 
 ship_sprites = {TEAM_RED: [r1_sprite, r2_sprite, r3_sprite],
@@ -1372,8 +1370,8 @@ exhaust_sprites = {id(r1_sprite): e1_sprite, id(g1_sprite): e1_sprite,
                    id(r2_sprite): e2_sprite, id(g2_sprite): e2_sprite,
                    id(r3_sprite): e3_sprite, id(g3_sprite): e3_sprite}
 
-explosion_sprite = sge.gfx.Sprite("explosion", DATA_IMAGES, origin_x=64,
-                                  origin_y=64, fps=30)
+explosion_sprite = sge.gfx.Sprite("explosion", DATA_IMAGES, origin_x=32,
+                                  origin_y=32, fps=30)
 bullet_sprites = {TEAM_RED: sge.gfx.Sprite("bullet_red", DATA_IMAGES,
                                            origin_x=8, origin_y=16),
                   TEAM_GREEN: sge.gfx.Sprite("bullet_green", DATA_IMAGES,
