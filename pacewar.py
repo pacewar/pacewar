@@ -88,7 +88,7 @@ MENU_SPACING = 16
 
 CONFIG_DIR = os.path.join(os.path.expanduser("~"), ".pacewar")
 
-colorblind = False
+colorblind = True
 points_to_win = 3
 
 ships_lists = {TEAM_RED: [], TEAM_GREEN: []}
