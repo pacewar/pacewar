@@ -1,7 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Pacewar
-# Copyright (C) 2014-2016 onpon4 <onpon4@riseup.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,12 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
 
-__version__ = "1.6.6"
+__version__ = "1.6.7"
+
 
 import sys
 import os
@@ -32,8 +28,6 @@ import json
 
 import sge
 
-if getattr(sys, "frozen", False):
-    __file__ = sys.executable
 
 DATA = os.path.join(os.path.dirname(__file__), "data")
 DATA_IMAGES = os.path.join(DATA, "images")
@@ -132,7 +126,7 @@ class Game(sge.dsp.Game):
             colorblind = not colorblind
             self.current_room.update_meter()
         elif key == "f8":
-            fname = "screenshot-{}.bmp".format(round(time.time(), 3))
+            fname = "screenshot-{}.png".format(round(time.time(), 3))
             sge.gfx.Sprite.from_screenshot().save(fname)
         elif key == "f11":
             if self.fullscreen:
@@ -177,16 +171,16 @@ class Room(sge.dsp.Room):
             sge.game.project_sprite(logo_sprite, 0, sge.game.width / 2, 96)
 
             if self.menu == MENU_KEYS_PLAYER1:
-                menu_items = ["Thrust:  {}".format(player1_key_thrust),
-                              "Left:    {}".format(player1_key_left),
-                              "Right:   {}".format(player1_key_right),
-                              "Shoot:   {}".format(player1_key_shoot),
+                menu_items = [f"Thrust:  {player1_key_thrust}",
+                              f"Left:    {player1_key_left}",
+                              f"Right:   {player1_key_right}",
+                              f"Shoot:   {player1_key_shoot}",
                               "Back"]
             elif self.menu == MENU_KEYS_PLAYER2:
-                menu_items = ["Thrust:  {}".format(player2_key_thrust),
-                              "Left:    {}".format(player2_key_left),
-                              "Right:   {}".format(player2_key_right),
-                              "Shoot:   {}".format(player2_key_shoot),
+                menu_items = [f"Thrust:  {player2_key_thrust}",
+                              f"Left:    {player2_key_left}",
+                              f"Right:   {player2_key_right}",
+                              f"Shoot:   {player2_key_shoot}",
                               "Back"]
             elif self.menu == MENU_JS_PLAYER1:
                 thrust = "None"
@@ -202,10 +196,10 @@ class Room(sge.dsp.Room):
                 if player1_js_shoot:
                     shoot = "Joystick {} {} {}".format(*player1_js_shoot)
 
-                menu_items = ["Thrust:  {}".format(thrust),
-                              "Left:    {}".format(left),
-                              "Right:   {}".format(right),
-                              "Shoot:   {}".format(shoot),
+                menu_items = [f"Thrust:  {thrust}",
+                              f"Left:    {left}",
+                              f"Right:   {right}",
+                              f"Shoot:   {shoot}",
                               "Back"]
             elif self.menu == MENU_JS_PLAYER2:
                 thrust = "None"
@@ -221,10 +215,10 @@ class Room(sge.dsp.Room):
                 if player2_js_shoot:
                     shoot = "Joystick {} {} {}".format(*player2_js_shoot)
 
-                menu_items = ["Thrust:  {}".format(thrust),
-                              "Left:    {}".format(left),
-                              "Right:   {}".format(right),
-                              "Shoot:   {}".format(shoot),
+                menu_items = [f"Thrust:  {thrust}",
+                              f"Left:    {left}",
+                              f"Right:   {right}",
+                              f"Shoot:   {shoot}",
                               "Back"]
             else:
                 menu_items = MENU_ITEMS[self.menu]
@@ -1335,7 +1329,7 @@ def create_room():
 
 # Create Game object
 Game(width=1280, height=720, scale=SCALE, scale_method="smooth", fps=30,
-     delta=True, delta_min=15, window_text="Pacewar",
+     delta=True, delta_min=15, delta_max=120, window_text="Pacewar",
      window_icon=os.path.join(DATA_IMAGES, "Spaceship15B.png"))
 
 # Load sprites
