@@ -30,6 +30,7 @@ To run the Pacewar source code, you will need the following
 dependencies:
 
 - Python 3.6 or later <https://www.python.org>
+- Pygame 1.9.1 or later <https://www.pygame.org>
 - Seclusion Game Engine 1.0 or later <https://python-sge.github.io>
 
 Once you have installed the dependencies, you can start Pacewar by
