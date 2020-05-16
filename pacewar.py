@@ -19,12 +19,13 @@
 __version__ = "1.6.7"
 
 
-import sys
-import os
-import math
-import time
-import random
 import json
+import math
+import os
+import random
+import sys
+import time
+import warnings
 
 import sge
 
@@ -1327,6 +1328,17 @@ def create_room():
                 object_area_height=64)
 
 
+def load_sound(*args, **kwargs):
+    # Load a sound if available, or otherwise return a blank sound
+    try:
+        snd = sge.snd.Sound(*args, **kwargs)
+    except OSError as e:
+        snd = sge.snd.Sound(None)
+        warnings.warn(str(e))
+
+    return snd
+
+
 # Create Game object
 Game(width=1280, height=720, scale=SCALE, scale_method="smooth", fps=30,
      delta=True, delta_min=15, delta_max=120, window_text="Pacewar",
@@ -1407,15 +1419,18 @@ layers.append(create_nebula(5, 5, 1))
 background = sge.gfx.Background(layers, sge.gfx.Color("black"))
 
 # Load sounds
-shoot_sound = sge.snd.Sound(os.path.join(DATA_SOUNDS, "shoot.wav"))
-explode_sound = sge.snd.Sound(os.path.join(DATA_SOUNDS, "explode.wav"))
-dissipate_sound = sge.snd.Sound(os.path.join(DATA_SOUNDS, "dissipate.ogg"))
-select_sound = sge.snd.Sound(os.path.join(DATA_SOUNDS, "select.ogg"),
-                             volume=0.5)
+shoot_sound = load_sound(os.path.join(DATA_SOUNDS, "shoot.wav"))
+explode_sound = load_sound(os.path.join(DATA_SOUNDS, "explode.wav"))
+dissipate_sound = load_sound(os.path.join(DATA_SOUNDS, "dissipate.ogg"))
+select_sound = load_sound(os.path.join(DATA_SOUNDS, "select.ogg"), volume=0.5)
 
 # Load music
-music = sge.snd.Music(os.path.join(DATA_MUSIC,
-                                   "DST-RailJet-LongSeamlessLoop.ogg"))
+try:
+    music = sge.snd.Music(os.path.join(DATA_MUSIC,
+                                       "DST-RailJet-LongSeamlessLoop.ogg"))
+except OSError as e:
+    music = sge.snd.Music(None)
+    warnings.warn(str(e))
 
 # Load fonts
 chars = [' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',',
@@ -1462,7 +1477,7 @@ else:
 try:
     with open(os.path.join(CONFIG_DIR, "joystick.json"), 'r') as f:
         js_cfg = json.load(f)
-except (IOError, ValueError):
+except (OSError, ValueError):
     pass
 else:
     player1_js_thrust = tuple(js_cfg.get("player1_thrust",
