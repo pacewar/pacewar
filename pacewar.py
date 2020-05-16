@@ -1342,7 +1342,7 @@ def load_sound(*args, **kwargs):
 # Create Game object
 Game(width=1280, height=720, scale=SCALE, scale_method="smooth", fps=30,
      delta=True, delta_min=15, delta_max=120, window_text="Pacewar",
-     window_icon=os.path.join(DATA_IMAGES, "Spaceship15B.png"))
+     window_icon=os.path.join(DATA_IMAGES, "icon.png"))
 
 # Load sprites
 r1_sprite = sge.gfx.Sprite(
