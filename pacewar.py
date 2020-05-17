@@ -1328,29 +1328,15 @@ def create_room():
                 object_area_height=64)
 
 
-def _load_sound(cls, fname, *args, **kwargs):
+def load_sound(*args, **kwargs):
     # Load a sound if available, or otherwise return a blank sound
     try:
-        snd = cls(fname, *args, **kwargs)
+        snd = sge.snd.Sound(*args, **kwargs)
     except OSError as e:
+        snd = sge.snd.Sound(None)
         warnings.warn(str(e))
-        root, ext = os.path.splitext(fname)
-        mp3 = ''.join([root, ".mp3"])
-        try:
-            snd = cls(mp3, *args, **kwargs)
-        except OSError as e:
-            warnings.warn(str(e))
-            snd = cls(None)
 
     return snd
-
-
-def load_sound(fname, *args, **kwargs):
-    return _load_sound(sge.snd.Sound, fname, *args, **kwargs)
-
-
-def load_music(fname, *args, **kwargs):
-    return _load_sound(sge.snd.Music, fname, *args, **kwargs)
 
 
 # Create Game object
