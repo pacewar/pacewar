@@ -30,6 +30,9 @@ import warnings
 import sge
 
 
+if getattr(sys, "frozen", False):
+    __file__ = sys.executable
+
 DATA = os.path.join(os.path.dirname(__file__), "data")
 DATA_IMAGES = os.path.join(DATA, "images")
 DATA_MUSIC = os.path.join(DATA, "music")
