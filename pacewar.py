@@ -246,7 +246,14 @@ class Room(sge.dsp.Room):
                         menu_font)
                 x = MENU_BORDER
                 y = MENU_BORDER + (line_h + MENU_SPACING) * i
-                self.menu_sprite.draw_text(font, menu_items[i], x, y,
+
+                # Colorblind accessibility
+                if self.menu_selection == i:
+                    txt = "<{}>".format(menu_items[i])
+                else:
+                    txt = menu_items[i]
+
+                self.menu_sprite.draw_text(font, txt, x, y,
                                            color=sge.gfx.Color("white"))
 
             self.menu_sprite.draw_unlock()
