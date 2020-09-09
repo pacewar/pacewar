@@ -23,17 +23,17 @@ one of your team's ships.
 
 HOW TO RUN
 
-If you have downloaded a version of Pacewar designated for a particular
-system, simply run the exectuable.
+If you have downloaded a version of the game designated for a particular
+system, simply run the executable.
 
-To run the Pacewar source code, you will need the following
-dependencies:
+To run the source code, you will need Python 3.6 or later
+<https://www.python.org>. You will also need the dependencies listed in
+requirements.txt, which you can install automatically by using the
+following command:
 
-- Python 3.6 or later <https://www.python.org>
-- Pygame 1.9.1 or later <https://www.pygame.org>
-- Seclusion Game Engine 1.0 or later <https://python-sge.github.io>
+    python3 -m pip install -r requirements.txt
 
-Once you have installed the dependencies, you can start Pacewar by
+Once you have installed the dependencies, you can start the game by
 running pacewar.py. On most systems, this should be done by
 double-clicking on it; if you are shown a dialog asking you if you want
 to display or run the file, choose to run it.
