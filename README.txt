@@ -51,8 +51,3 @@ Other controls:
 - F8: Take a screenshot.
 - F11: Toggle fullscreen.
 - Escape: Quit the game.
-- Middle mouse button: Quit the game.
-
-The middle mouse button quitting the game is meant to work around a bug
-in SDL 1.2 (an indirect dependency) which sometimes locks up the
-keyboard when toggling fullscreen or changing the window size.

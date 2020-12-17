@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-__version__ = "1.6.7"
+__version__ = "1.6.8a0"
 
 
 import json
@@ -139,10 +139,6 @@ class Game(sge.dsp.Game):
                 self.scale = None
             else:
                 self.fullscreen = True
-
-    def event_mouse_button_press(self, button):
-        if button == "middle":
-            self.event_close()
 
     def event_close(self):
         self.end()
